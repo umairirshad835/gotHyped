@@ -24,7 +24,6 @@ use App\Models\UserAddress;
 use App\Models\UserShippingAddress;
 use App\Models\User;
 
-
 class AuctionBidUsedController extends Controller
 {
     public function auctionBidding(Request $request)
