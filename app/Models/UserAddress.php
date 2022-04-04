@@ -13,4 +13,8 @@ class UserAddress extends Model
         'user_id',
         'address',
     ];
+
+    public function UserShippingAddress(){
+        return $this->hasOne(UserShippingAddress::class,'id','address_id');
+    }
 }

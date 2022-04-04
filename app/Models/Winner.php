@@ -25,4 +25,12 @@ class Winner extends Model
     public function userSetting(){
         return $this->hasOne(UserSetting::class,'user_id','user_id');
     }
+
+    public function user(){
+        return $this->hasMany(User::class,'id','user_id');
+    }
+
+    public function shippingAddress(){
+        return $this->hasone(UserShippingAddress::class,'user_id','user_id');
+    }
 }

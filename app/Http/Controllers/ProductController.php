@@ -9,31 +9,34 @@ use App\Models\Category;
 use App\Models\ProductSize;
 use App\Models\AssignProductSize;
 use App\Models\CategorySize;
+use App\Models\Winner;
+use App\Models\User;
 
 
 class ProductController extends Controller
 {
-    public function productList(){
+    public function productList()
+    {
 
         $productList = Product::with('category')->paginate(25);
         return view('Admin.product.index',compact('productList'));
     }
 
-    public function addProduct(){
-
+    public function addProduct()
+    {
         $all_category = Category::all();
             return view('Admin.product.add-product',compact('all_category'));
     }
 
-    public function getSizes($id){
-
+    public function getSizes($id)
+    {
         $category_size = CategorySize::where('cat_id',$id)->pluck('size_id');
         $size = ProductSize::whereIn('id',$category_size)->get();
             return response()->json($size);
     }
 
-    public function saveProduct(Request $request){
-        
+    public function saveProduct(Request $request)
+    {
         $request->validate([
             'name' => 'required|max:50',
             'category' => 'required',
@@ -97,14 +100,13 @@ class ProductController extends Controller
             'actual_price' => $request->actual_price,
             'market_price' => $request->market_price,
             'auction_price' => $request->auction_price,
-            'auction_time' => $request->auction_time,
+            'auction_time' => date('Y-m-d H:i', strtotime($request->auction_time)),
             'description' => $request->descripton,
             'image1' => $mainimage_path,
             'image2' => isset($imagetwo_path) ? $imagetwo_path : '',
             'image3' => isset($imagethree_path) ? $imagethree_path : '',
         ];
-
-        // dd($data);
+            // dd(date('Y-m-d H:i', strtotime($request->auction_time)));
 
         $product = Product::create($data);
 
@@ -126,16 +128,16 @@ class ProductController extends Controller
         }
     }
 
-    public function editProduct($id){
-
+    public function editProduct($id)
+    {
         $categories = Category::all();
         $product = Product::find($id);
         // dd($product);
         return view('Admin.product.update-product',compact('product','categories'));
     }
 
-    public function updateProduct(Request $request){
-        
+    public function updateProduct(Request $request)
+    {
         $request->validate([
             'name' => 'required|max:50',
             'category' => 'required',
@@ -234,39 +236,41 @@ class ProductController extends Controller
             'actual_price' => $request->actual_price,
             'market_price' => $request->market_price,
             'auction_price' => $request->auction_price,
-            'auction_time' => $request->auction_time,
+            'auction_time' => date('Y-m-d H:i', strtotime($request->new_auction_time)),
             'description' => $request->descripton,
             'image1' => $mainimage_path,
             'image2' => isset($imagetwo_path) ? $imagetwo_path : '',
             'image3' => isset($imagethree_path) ? $imagethree_path : '',
         ];
 
+        // dd(date('Y-m-d H:i', strtotime($request->new_auction_time)));
+
         $product->update($data);
             return redirect()->route('productList')->with('success','Product Updated Successfully');
        
     }
 
-    public function deleteProduct($id){
+    public function deleteProduct($id)
+    {
         $size = Product::where('id',$id)->delete();
             return redirect()->route('productList')->with('success','Product deleted');
     }
 
-    public function assignSize($id){
-
+    public function assignSize($id)
+    {
         $product = Product::find($id);
-
         $categorySizes = CategorySize::where('cat_id',$product->category_id)->pluck('size_id');
         $sizes = ProductSize::whereIn('id',$categorySizes)->get();
 
         return view('Admin.product.assign-size',compact('sizes','product'));
     }
 
-    public function saveProductSize(Request $request){
-        
+    public function saveProductSize(Request $request)
+    {
         $size_id = $request->size_id;
         $product_id = $request->product_id;
-
-        foreach($size_id as $key => $id){
+        foreach($size_id as $key => $id)
+        {
             $savesize = new AssignProductSize();
 
             $savesize->product_id = $product_id;
@@ -278,7 +282,8 @@ class ProductController extends Controller
         return redirect()->route('productList')->with('success','Size Assigned Successfully');
     }
 
-    public function changeProductStatus(Request $request, $id){
+    public function changeProductStatus(Request $request, $id)
+    {
 
         $updateStatus = Product::find($id);
         $status = [
@@ -291,25 +296,29 @@ class ProductController extends Controller
 
     }
 
-    public function pendingAuctions(){
+    public function pendingAuctions()
+    {
         $pendingAuctions = Product::where('auction_status',0)->orderBy('auction_time','ASC')->paginate(25);
 
             return view('Admin.auctions.pending',compact('pendingAuctions'));
     }
 
-    public function activeAuctions(){
+    public function activeAuctions()
+    {
         $activeAuctions = Product::where('auction_status',1)->orderBy('auction_time','ASC')->paginate(25);
         
             return view('Admin.auctions.active',compact('activeAuctions'));
     }
 
-    public function expiredAuctions(){
-        $expiredAuctions = Product::where('auction_status',2)->orderBy('auction_time','ASC')->paginate(25);
+    public function completedAuctions()
+    {
+        $completedAuctions = Product::where('auction_status',2)->orderBy('auction_time','ASC')->paginate(25);
         
-            return view('Admin.auctions.expire',compact('expiredAuctions'));
+            return view('Admin.auctions.expire',compact('completedAuctions'));
     }
 
-    public function changeAuctionStatus(Request $request, $id){
+    public function changeAuctionStatus(Request $request, $id)
+    {
 
         $updateStatus = Product::find($id);
         $status = [
@@ -321,15 +330,23 @@ class ProductController extends Controller
             return redirect()->back()->with('success','Product Status change Successfully');
     }
 
-    public function previewProduct($id){
-
+    public function previewProduct($id)
+    {
+        // product data
         $product = Product::with('category')->find($id);
         $sizes_id = AssignProductSize::where('product_id',$product->id)->pluck('size_id');
         $sizenames = ProductSize::whereIn('id',$sizes_id)->get();
 
-        return view('Admin.product.view-product',compact('product','sizenames'));
-    }
+        
+        // Winner data of Auction
+        $winner = Winner::with(['user','shippingAddress.address'])->where('product_id',$product->id)->first();
+        //  dump($winner);
 
-    
+        $user_bot = Winner::with(['user'])->where('product_id',$product->id)->first();
+        $user = User::where('id',$user_bot->user_id)->first();
+        
+        
+        return view('Admin.product.view-product',compact('product','sizenames','winner','user'));
+    }
 
 }

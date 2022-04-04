@@ -9,7 +9,7 @@ use App\Http\Controllers\ProductSizeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\BidController;
 use App\Http\Controllers\NotificationController;
-
+use App\Http\Controllers\ManageAuctionController;
 
 
 /*
@@ -23,12 +23,34 @@ use App\Http\Controllers\NotificationController;
 |
 */
 
+/*clear cache and config*/
+Route::get('/clear', function () {
+    Artisan::call('cache:clear');
+    dump('Cache Clear!');
+    Artisan::call('config:clear');
+    dump('Config Clear!');
+    Artisan::call('route:clear');
+    dump('Route Clear!');
+    
+    //when upload new project and if 419 page expired issue on server
+    //Artisan::call('config:cache');
+    //dump('Config Cache Clear!');
+    
+    Artisan::call('view:clear');
+    dump('View Clear!');
+    
+    //Artisan::call('optimize:clear');
+    //Artisan::call('optimize');
+    //dump('Optimize');
+    return back();
+});
+
 Route::get('/', function () {
     return view('login');
 });
 
-	Route::get('/login', [HomeController::class, 'index'])->name('login');
-    Route::post('/userLogin', [HomeController::class, 'userLogin'])->name('userlogin');
+Route::get('/login', [HomeController::class, 'index'])->name('login');
+Route::post('/userLogin', [HomeController::class, 'userLogin'])->name('userlogin');
 
 
     
@@ -96,13 +118,14 @@ Route::group(['middleware' => 'auth'], function () {
     // Auctions Management
     Route::get('/pending-auctions',[ProductController::class,'pendingAuctions'])->name('pendingAuctions');
     Route::get('/active-auctions',[ProductController::class,'activeAuctions'])->name('activeAuctions');
-    Route::get('/expired-auctions',[ProductController::class,'expiredAuctions'])->name('expiredAuctions');
+    Route::get('/completed-auctions',[ProductController::class,'completedAuctions'])->name('expiredAuctions');
     Route::post('/change-auction-status/{id}',[ProductController::class,'changeAuctionStatus'])->name('changeAuctionStatus');
-
-
+    Route::get('/Bids-Calculation/{id}',[ManageAuctionController::class,'auctionBidsCalculation'])->name('');
 
     // Logout
     Route::post('/logout', [HomeController::class, 'logout'])->name('logout');
 });
 
 
+    Route::get('/auction-index',[ManageAuctionController::class,'index'])->name('auctionIndex');
+    Route::post('/manage-auction',[ManageAuctionController::class,'manageAuction'])->name('manageAuction');

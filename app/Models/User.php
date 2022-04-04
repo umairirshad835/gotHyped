@@ -67,4 +67,8 @@ class User extends Authenticatable
     public function bidUsed(){
         return $this->belongsTo(AuctionBidUsed::class,'user_id','id');
     }
+
+    public function winner(){
+        return $this->belongsTo(Winner::class,'user_id','id');
+    }
 }

@@ -17,6 +17,10 @@ class UserShippingAddress extends Model
     ];
 
     public function address(){
-        return $this->belongsTo(UserAddress::class,'id','user_address_id');
+        return $this->belongsTo(UserAddress::class);
+    }
+
+    public function winner(){
+        return $this->belongsTo(Winner::class,'user_id','user_id');
     }
 }

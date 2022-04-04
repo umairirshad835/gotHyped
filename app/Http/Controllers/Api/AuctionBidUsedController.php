@@ -63,19 +63,11 @@ class AuctionBidUsedController extends Controller
             $auction_price_now = $assume_price;
         }
 
-        // calculate time from auction Start
-        $updateTime = $check_auction->updated_at;
+        // calculate time from auction start if not exist then get time from product
+        $updateTime = isset($check_auction->updated_at) ? $check_auction->updated_at :$check_product->updated_at;
         $crtime = Carbon::now();
-        $timeDiff = round($crtime->diffInSeconds($updateTime)/60);
-
-
-        if($auctionId = $check_auction->auction_id && $timeDiff >= 5)
-        {
-            $bitId = $this->botUser();
-
-            
-        }
-
+        $timecalc = $crtime->diff($updateTime);
+        $timeDiff = $timecalc->s;
 
         if($auction_price_now >= $check_product->auction_price)
         {
@@ -131,166 +123,16 @@ class AuctionBidUsedController extends Controller
             }
             else
             {
-                $user = Auth::user();
-	            $userId = $user->id;
-
-                $auctionId = $request->auction_id;
-                $bidUsed = 0;
-                $currentprice = 0.00;
-
-                $find_auction = Product::where('id', $auctionId)->where('auction_status', 1)->first();
-            
-                if(!empty($find_auction))
-                {
-                    $check_acution = AuctionBidUsed::where('auction_id',$auctionId)->where('user_id',$userId)->first();
-
-                    if(!empty($check_acution)){
-                        $bidUsed = $check_acution->bid_used;
-                    }
-
-                    $data = [
-                        'auction_id' => $auctionId,
-                        'user_id' => $userId,
-                        'bid_used' => ++$bidUsed,
-                        'created_at' => Carbon::now(),
-                        'updated_at' => Carbon::now(),
-                    ];
-
-                    $Bids = AuctionBidUsed::updateOrInsert(['auction_id' => $auctionId, 'user_id' => $userId], $data);
-
-                    // subtract bid from User Total Bids
-                    if($Bids)
-                    {
-                        $userTotalBid = UserBid::where('user_id',$userId)->decrement('total_bids',1);
-                    }
-
-                    $totalBids = AuctionBidUsed::where('auction_id',$auctionId)->sum('bid_used');
-                    $acution_start = AuctionStart::where('auction_id',$auctionId)->first();
-
-                    if(!empty($acution_start)){
-                        $currentauctionprice = $acution_start->current_price;
-                        $currentbidprice = $currentauctionprice+0.01;
-                    }
-                    else
-                    {
-                        $currentbidprice = $currentprice+0.01;
-                    }
-                
-                    $auction_data = [
-                        'auction_id' => $auctionId,
-                        'last_user_id' => $userId,
-                        'current_bid_used' => $totalBids,
-                        'current_price' => $currentbidprice,
-                        'created_at' => Carbon::now(),
-                        'updated_at' => Carbon::now(),
-                    ];
-
-                    $auctionStart = AuctionStart::updateOrInsert(['auction_id' => $auctionId], $auction_data);
-                
-                    $response = [
-                        'status' => 1,
-                        'message' => 'User Bid Successfully',
-                        'method' => $request->route()->getActionMethod(),
-                        'data' => $data,
-                    ];
-
-                    return response()->json($response);
-                }
-                else
-                {
-                    $response = [
-                        'status' => 0,
-                        'message' => 'Auction not found',
-                        'method' => $request->route()->getActionMethod(),
-                        'data' => (object) array(),
-                    ];
-
-                    return response()->json($response);
-                }
+                $this->auctionUser($auctionId,$userId);
             }
         }
         else
         {
-            $user = Auth::user();
-            $userId = $user->id;
-
-            $auctionId = $request->auction_id;
-            $bidUsed = 0;
-            $currentprice = 0.00;
-
-            $find_auction = Product::where('id', $auctionId)->where('auction_status', 1)->first();
-        
-            if(!empty($find_auction))
-            {
-                $check_acution = AuctionBidUsed::where('auction_id',$auctionId)->where('user_id',$userId)->first();
-
-                if(!empty($check_acution)){
-                    $bidUsed = $check_acution->bid_used;
-                }
-
-                $data = [
-                    'auction_id' => $auctionId,
-                    'user_id' => $userId,
-                    'bid_used' => ++$bidUsed,
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
-                ];
-
-                $Bids = AuctionBidUsed::updateOrInsert(['auction_id' => $auctionId, 'user_id' => $userId], $data);
-
-                // subtract bid from User bid wallet
-                if($Bids)
-                {
-                    $userTotalBid = UserBid::where('user_id',$userId)->decrement('total_bids',1);
-                }
-
-                $totalBids = AuctionBidUsed::where('auction_id',$auctionId)->sum('bid_used');
-                $acution_start = AuctionStart::where('auction_id',$auctionId)->first();
-
-                if(!empty($acution_start)){
-                    $currentauctionprice = $acution_start->current_price;
-                    $currentbidprice = $currentauctionprice+0.01;
-                }
-                else
-                {
-                    $currentbidprice = $currentprice+0.01;
-                }
-            
-                $auction_data = [
-                    'auction_id' => $auctionId,
-                    'last_user_id' => $userId,
-                    'current_bid_used' => $totalBids,
-                    'current_price' => $currentbidprice,
-                    'created_at' => Carbon::now(),
-                    'updated_at' => Carbon::now(),
-                ];
-
-                $auctionStart = AuctionStart::updateOrInsert(['auction_id' => $auctionId], $auction_data);
-            
-                $response = [
-                    'status' => 1,
-                    'message' => 'User Bid Successfully',
-                    'method' => $request->route()->getActionMethod(),
-                    'data' => $data,
-                ];
-
-                return response()->json($response);
-            }
-            else
-            {
-                $response = [
-                    'status' => 0,
-                    'message' => 'Auction not found',
-                    'method' => $request->route()->getActionMethod(),
-                    'data' => (object) array(),
-                ];
-
-                return response()->json($response);
-            }
+            $this->auctionUser($auctionId,$userId);
         }
     }
 
-    public function botUser(Request $request)
+    public function botUser()
     {
            $botUser = new User();
 
@@ -309,7 +151,6 @@ class AuctionBidUsedController extends Controller
                 $response = [
                     'status' => 1,
                     'message' => $botUser->username. " Bid Successfully",
-                    'method'  => $request->route()->getActionMethod(),
                     'data' => $botUser,
                 ];
                 return response()->json($response);
@@ -318,11 +159,68 @@ class AuctionBidUsedController extends Controller
             $response = [
                 'status' => 1,
                 'message' => 'User Bot Not Generated',
-                'method'  => $request->route()->getActionMethod(),
                 'data' => (object) array(),
             ];
             return response()->json($response);
            }
+    }
+
+    public function auctionUser($auctionId,$userId)
+    {
+        $bidUsed = 0;
+        $currentprice = 0.00;
+
+        $find_auction = Product::where('id', $auctionId)->where('auction_status', 1)->first();
+        
+        if(!empty($find_auction))
+        {
+            $check_acution = AuctionBidUsed::where('auction_id',$auctionId)->where('user_id',$userId)->first();
+
+            if(!empty($check_acution)){
+                $bidUsed = $check_acution->bid_used;
+            }
+
+            $data = [
+                'auction_id' => $auctionId,
+                'user_id' => $userId,
+                'bid_used' => ++$bidUsed,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ];
+
+            $Bids = AuctionBidUsed::updateOrInsert(['auction_id' => $auctionId, 'user_id' => $userId], $data);
+
+            // subtract bid from User bid wallet
+            if($Bids)
+            {
+                $userTotalBid = UserBid::where('user_id',$userId)->decrement('total_bids',1);
+            }
+
+            $totalBids = AuctionBidUsed::where('auction_id',$auctionId)->sum('bid_used');
+            $acution_start = AuctionStart::where('auction_id',$auctionId)->first();
+
+            if(!empty($acution_start)){
+                $currentauctionprice = $acution_start->current_price;
+                $currentbidprice = $currentauctionprice+0.01;
+            }
+            else
+            {
+                $currentbidprice = $currentprice+0.01;
+            }
+        
+            $auction_data = [
+                'auction_id' => $auctionId,
+                'last_user_id' => $userId,
+                'current_bid_used' => $totalBids,
+                'current_price' => $currentbidprice,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ];
+
+            $auctionStart = AuctionStart::updateOrInsert(['auction_id' => $auctionId], $auction_data);
+
+            return $data;
+        }
     }
 
 

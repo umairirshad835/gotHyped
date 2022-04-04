@@ -18,7 +18,7 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Expire Auctions</h3>
+                        <h3 class="card-title">Complete Auctions</h3>
                     </div>
                     <div class="card-body">
                             <div class="table-responsive">
@@ -36,19 +36,19 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($expiredAuctions as $key => $expire)
+                                        @foreach($completedAuctions as $key => $complete)
                                         <tr>
                                             <td>{{++$key}}</td>
-                                            <td>{{$expire->name}}</td>
-                                            <td>${{$expire->actual_price}}</td>
-                                            <td>${{$expire->market_price}}</td>
-                                            <td>${{$expire->auction_price}}</td>
-                                            <td>{{ \Carbon\Carbon::createFromTimestamp(strtotime($expire->auction_time))->format('Y-m-d H:i:s A')}}</td>
+                                            <td>{{$complete->name}}</td>
+                                            <td>${{$complete->actual_price}}</td>
+                                            <td>${{$complete->market_price}}</td>
+                                            <td>${{$complete->auction_price}}</td>
+                                            <td>{{ \Carbon\Carbon::createFromTimestamp(strtotime($complete->auction_time))->format('Y-m-d H:i:s A')}}</td>
                                             <td>
-                                            <form action="{{route('changeAuctionStatus',$expire->id)}}" method="POST">
+                                            <form action="{{route('changeAuctionStatus',$complete->id)}}" method="POST">
                                                     @csrf
-                                                <input type="hidden" name="status" value="{{ $expire->status == 1 ? 0 : 1 }}"/>
-                                                    @if($expire->status == 1)
+                                                <input type="hidden" name="status" value="{{ $complete->status == 1 ? 0 : 1 }}"/>
+                                                    @if($complete->status == 1)
                                                         <button type="submit" class="btn btn-success">Active</button>
                                                     @else
                                                         <button type="submit" class="btn btn-danger">In-active</button>
@@ -56,8 +56,8 @@
                                                 </form>
                                             </td>
                                             <td>
-                                                <a href="{{route('editProduct', $expire->id)}}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
-                                                <a href="{{route('previewProduct', $expire->id)}}" target="_blank"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                                                <a href="{{route('editProduct', $complete->id)}}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a>
+                                                <a href="{{route('previewProduct', $complete->id)}}" target="_blank"><i class="fa fa-eye" aria-hidden="true"></i></a>
                                             </td>
                                         </tr>
                                         @endforeach
@@ -65,7 +65,7 @@
                                 </table>
                             </div>
                             <br>
-                            {{$expiredAuctions->links()}}
+                            {{$completedAuctions->links()}}
                             <br>
                     </div>
                 </div>

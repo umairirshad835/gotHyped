@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        Commands\BotCron::class,
     ];
 
     /**
@@ -24,7 +24,15 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+
+          $schedule->command('bot:cron')->everyMinute();
+
+    }
+
+    protected function shortSchedule(\Spatie\ShortSchedule\ShortSchedule $shortSchedule)
+    {
+        // this artisan command will run every 5 second to generate Bot for Auction
+        $shortSchedule->command('bot:cron')->everySeconds(5);
     }
 
     /**

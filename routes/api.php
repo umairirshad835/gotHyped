@@ -54,10 +54,6 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('/user-address',[AuctionBidUsedController::class, 'userAddress']);
     Route::post('/user-shipping-address',[AuctionBidUsedController::class, 'saveShippingData']);
 
-    // Bot user
-    Route::post('bot-user',[AuctionBidUsedController::class, 'botUser']);
-    Route::post('bot-user-two',[AuctionBidUsedController::class, 'botUserTwo']);
-
     // Notifications
     Route::get('/notifications', [NotificationsController::class, 'notification']);
 
@@ -97,5 +93,4 @@ Route::group(['middleware' => 'auth:api'], function () {
     // Profile view
     Route::get('/profile', [UserProfileController::class,'profileView']);
     Route::post('/guest-profile-view',[UserProfileController::class,'guestProfileView']);
-
 });

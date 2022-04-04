@@ -21,7 +21,7 @@ class CreateProductsTable extends Migration
             $table->double('market_price',8,2);
             $table->double('auction_price',8,2);
             $table->timestamp('auction_time');
-            $table->string('description');
+            $table->string('description')->nullable();
             $table->string('image1');
             $table->string('image2')->nullable();
             $table->string('image3')->nullable();
