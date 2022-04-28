@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\support\Facades\Auth;
 use Carbon\Carbon;
-use App\Helpers\BotUser;
 use DB;
 
 
@@ -61,7 +60,6 @@ class BotCron extends Command
 
             $userId ='';
             $assume_price = 0.00;
-            $flag = $request->flag;
 
             // $auctionId = $request->auction_id;
             $currentTime = Carbon::now();
@@ -86,7 +84,7 @@ class BotCron extends Command
                         else
                         {
                             $auctionId = $data->id;
-                            $check_auction = $data->id;
+                /** Why */             //$check_auction = $data->id;
                             $auction_price_now = $assume_price;
                         }
 
@@ -108,9 +106,9 @@ class BotCron extends Command
                             $flag_value = 1;
                         }
                        
-                        if($flag == 0)
+                        if($flag_value == 0)
                         {   
-                            if($timeDiff >= 5 && $flag == $flag_value)
+                            if($timeDiff >= 5)
                             {
                                 $winner_data = [
                                     'user_id' => $check_auction->last_user_id,
@@ -127,6 +125,7 @@ class BotCron extends Command
                                 {
                                     $returnBids = AuctionBidUsed::where('auction_id',$auctionId)->where('user_id',$check_auction->last_user_id)->first();
                                     $update_auction_status = Product::where('id',$winner->product_id)->update(['auction_status' => 2]);
+                    /** Why */                // $update_product_status = winner::where('product_id',$winner->product_id)->update(['get_product_status' => 1]);
                                 }
 
                                 // get all losers data except winner
@@ -152,16 +151,8 @@ class BotCron extends Command
                         }
                         else
                         {
-                            if($auction_price_now <= $data->auction_price)
-                            {
-                            $flag_value = 0;
-                            }
-                            else
-                            {
-                                $flag_value = 1;
-                            }
                         
-                            if($timeDiff >= 5 && !empty($check_auction) && $flag == $flag_value)
+                            if($timeDiff >= 5 && !empty($check_auction))
                             {   
                                 $botCount = DB::table('auction_bid_useds')
                                 ->join('users', 'auction_bid_useds.user_id','=','users.id')
@@ -173,7 +164,23 @@ class BotCron extends Command
                                 {
                                     $bot = $this->botUser();
                                     $userId = $bot->id;
-                                    $this->auctionUser($auctionId,$userId);
+                                    $data = $this->auctionUser($auctionId,$userId);
+
+                                    if($data == 0)
+                                    {
+                                        $responses = [
+                                            'status' => 0,
+                                            'message' => 'Auction Not Found',
+                                            'data' => (object) array(),
+                                        ];
+                                            return response()->json($responses);
+                                    }
+                                        $responses = [
+                                            'status' => 1,
+                                            'message' => 'Bid Successfully',
+                                            'data' => $data,
+                                        ];
+                                            return response()->json($responses);
                                 }
                                 else
                                 {
@@ -193,7 +200,23 @@ class BotCron extends Command
                                         ->first();
 
                                         $userId = $botCount->user_id;
-                                        $this->auctionUser($auctionId,$userId);
+                                        $data = $this->auctionUser($auctionId,$userId);
+
+                                        if($data == 0)
+                                        {
+                                            $responses = [
+                                                'status' => 0,
+                                                'message' => 'Auction Not Found',
+                                                'data' => (object) array(),
+                                            ];
+                                                return response()->json($responses);
+                                        }
+                                            $responses = [
+                                                'status' => 1,
+                                                'message' => 'Bid Successfully',
+                                                'data' => $data,
+                                            ];
+                                                return response()->json($responses);
                                     }
                                     else
                                     {
@@ -204,11 +227,27 @@ class BotCron extends Command
                                         ->first();
 
                                         $userId = $botCount->user_id;
-                                        $this->auctionUser($auctionId,$userId);
+                                        $data = $this->auctionUser($auctionId,$userId);
+
+                                        if($data == 0)
+                                        {
+                                            $responses = [
+                                                'status' => 0,
+                                                'message' => 'Auction Not Found',
+                                                'data' => (object) array(),
+                                            ];
+                                                return response()->json($responses);
+                                        }
+                                            $responses = [
+                                                'status' => 1,
+                                                'message' => 'Bid Successfully',
+                                                'data' => $data,
+                                            ];
+                                                return response()->json($responses);
                                     }
                                 }
                             }
-                            elseif($timeDiff >= 5 && empty($check_auction) && $flag == $flag_value)
+                            elseif($timeDiff >= 5 && empty($check_auction))
                             {
                                 $botCount = DB::table('auction_bid_useds')
                                 ->LeftJoin('users', 'auction_bid_useds.user_id','=','users.id')
@@ -221,7 +260,23 @@ class BotCron extends Command
                                     $bot = $this->botUser();
                                     $userId = $bot->id;
                                     $auctionId = $data->id;
-                                    $this->auctionUser($auctionId,$userId);
+                                    $data = $this->auctionUser($auctionId,$userId);
+
+                                    if($data == 0)
+                                    {
+                                        $responses = [
+                                            'status' => 0,
+                                            'message' => 'Auction Not Found',
+                                            'data' => (object) array(),
+                                        ];
+                                            return response()->json($responses);
+                                    }
+                                        $responses = [
+                                            'status' => 1,
+                                            'message' => 'Bid Successfully',
+                                            'data' => $data,
+                                        ];
+                                            return response()->json($responses);
                                 }
                                 else
                                 {
@@ -232,22 +287,30 @@ class BotCron extends Command
                                     ->first();
 
                                     $userId = $botCount->user_id;
-                                    $this->auctionUser($auctionId,$userId);
+                                    $data = $this->auctionUser($auctionId,$userId);
+
+                                    if($data == 0)
+                                    {
+                                        $responses = [
+                                            'status' => 0,
+                                            'message' => 'Auction Not Found',
+                                            'data' => (object) array(),
+                                        ];
+                                            return response()->json($responses);
+                                    }
+                                        $responses = [
+                                            'status' => 1,
+                                            'message' => 'Bid Successfully',
+                                            'data' => $data,
+                                        ];
+                                            return response()->json($responses);
                                 }
                             }
                         }
                     }
                     else
-                    {
-                        if($auction_price_now <= $data->auction_price)
-                        {
-                            $flag_value = 0;
-                        }
-                        else{
-                            $flag_value = 1;
-                        }
-                        
-                        if($timeDiff >= 5 && !empty($check_auction) && $flag == $flag_value)
+                    { 
+                        if($timeDiff >= 5 && !empty($check_auction))
                         {   
                             $botCount = DB::table('auction_bid_useds')
                             ->join('users', 'auction_bid_useds.user_id','=','users.id')
@@ -259,7 +322,23 @@ class BotCron extends Command
                             {
                                 $bot = $this->botUser();
                                 $userId = $bot->id;
-                                $this->auctionUser($auctionId,$userId);
+                                $data = $this->auctionUser($auctionId,$userId);
+
+                                if($data == 0)
+                                {
+                                    $responses = [
+                                        'status' => 0,
+                                        'message' => 'Auction Not Found',
+                                        'data' => (object) array(),
+                                    ];
+                                        return response()->json($responses);
+                                }
+                                    $responses = [
+                                        'status' => 1,
+                                        'message' => 'Bid Successfully',
+                                        'data' => $data,
+                                    ];
+                                        return response()->json($responses);
                             }
                             else
                             {
@@ -279,7 +358,23 @@ class BotCron extends Command
                                     ->first();
 
                                     $userId = $botCount->user_id;
-                                    $this->auctionUser($auctionId,$userId);
+                                    $data = $this->auctionUser($auctionId,$userId);
+
+                                    if($data == 0)
+                                    {
+                                        $responses = [
+                                            'status' => 0,
+                                            'message' => 'Auction Not Found',
+                                            'data' => (object) array(),
+                                        ];
+                                            return response()->json($responses);
+                                    }
+                                        $responses = [
+                                            'status' => 1,
+                                            'message' => 'Bid Successfully',
+                                            'data' => $data,
+                                        ];
+                                            return response()->json($responses);
                                 }
                                 else
                                 {
@@ -290,11 +385,27 @@ class BotCron extends Command
                                     ->first();
 
                                     $userId = $botCount->user_id;
-                                    $this->auctionUser($auctionId,$userId);
+                                    $data = $this->auctionUser($auctionId,$userId);
+
+                                    if($data == 0)
+                                    {
+                                        $responses = [
+                                            'status' => 0,
+                                            'message' => 'Auction Not Found',
+                                            'data' => (object) array(),
+                                        ];
+                                            return response()->json($responses);
+                                    }
+                                        $responses = [
+                                            'status' => 1,
+                                            'message' => 'Bid Successfully',
+                                            'data' => $data,
+                                        ];
+                                            return response()->json($responses);
                                 }
                             }
                         }
-                        elseif($timeDiff >= 5 && empty($check_auction) && $flag == $flag_value)
+                        elseif($timeDiff >= 5 && empty($check_auction))
                         {
                             $botCount = DB::table('auction_bid_useds')
                             ->LeftJoin('users', 'auction_bid_useds.user_id','=','users.id')
@@ -307,7 +418,23 @@ class BotCron extends Command
                                 $bot = $this->botUser();
                                 $userId = $bot->id;
                                 $auctionId = $data->id;
-                                $this->auctionUser($auctionId,$userId);
+                                $data = $this->auctionUser($auctionId,$userId);
+
+                                if($data == 0)
+                                {
+                                    $responses = [
+                                        'status' => 0,
+                                        'message' => 'Auction Not Found',
+                                        'data' => (object) array(),
+                                    ];
+                                        return response()->json($responses);
+                                }
+                                    $responses = [
+                                        'status' => 1,
+                                        'message' => 'Bid Successfully',
+                                        'data' => $data,
+                                    ];
+                                        return response()->json($responses);
                             }
                             else
                             {
@@ -318,7 +445,23 @@ class BotCron extends Command
                                 ->first();
 
                                 $userId = $botCount->user_id;
-                                $this->auctionUser($auctionId,$userId);
+                                $data = $this->auctionUser($auctionId,$userId);
+
+                                if($data == 0)
+                                {
+                                    $responses = [
+                                        'status' => 0,
+                                        'message' => 'Auction Not Found',
+                                        'data' => (object) array(),
+                                    ];
+                                        return response()->json($responses);
+                                }
+                                    $responses = [
+                                        'status' => 1,
+                                        'message' => 'Bid Successfully',
+                                        'data' => $data,
+                                    ];
+                                        return response()->json($responses);
                             }
                         }
                     }
@@ -334,12 +477,24 @@ class BotCron extends Command
         
     }
 
+    function BotUserName()
+    {
+        $username = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return substr(str_shuffle($username),0,8);
+    }
+
+    function BotName()
+    {
+        $name = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            return substr(str_shuffle($name),0,8);
+    }
+
     public function botUser()
     {
         $botUser = new User();
 
-        $botUser->name = BotUser::BotName();
-        $botUser->username = BotUser::BotUserName();
+        $botUser->name = $this->BotName();
+        $botUser->username = $this->BotUserName();
         $botUser->email = $botUser->username."@gothyped.com";
         $botUser->phone = '03007798998';
         $botUser->password =  bcrypt(12345);
@@ -400,7 +555,11 @@ class BotCron extends Command
 
             $auctionStart = AuctionStart::updateOrInsert(['auction_id' => $auctionId], $auction_data);
 
-            return $data;
+            return $auction_data;
+        }
+        else
+        {
+            return 0;
         }
     }
 }

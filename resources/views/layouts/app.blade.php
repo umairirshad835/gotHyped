@@ -13,10 +13,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- FAVICON -->
-    <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/images/brand/favicon.ico') }}" />
+    <link rel="shortcut icon"  href="{{ asset('assets/images/brand/favicon.png') }}" />
 
     <!-- TITLE -->
-    <title>{{ config('app.name', 'Laravel') }} </title>
+    <title>{{ config('app.name', 'GotHyped') }} </title>
 
     <!-- BOOTSTRAP CSS -->
     <link id="style" href="{{ asset('assets/plugins/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" />
@@ -32,7 +32,7 @@
 
     <!-- COLOR SKIN CSS -->
     <link id="theme" rel="stylesheet" type="text/css" media="all" href="{{ asset('assets/colors/color1.css') }}" />
-
+    @yield('custom-css')
 </head>
 
 <body class="app sidebar-mini ltr light-mode">

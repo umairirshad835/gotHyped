@@ -14,4 +14,12 @@ class Loser extends Model
         'user_id',
         'lost_bids',
     ];
+
+    public function ProductLost(){
+        return $this->hasMany(Product::class,'id','auction_id');
+    }
+
+    public function auctionLoser(){
+        return $this->hasMany(User::class,'id','user_id');
+    }
 }

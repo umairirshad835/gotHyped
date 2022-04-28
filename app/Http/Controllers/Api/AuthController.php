@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\support\Facades\Auth;
-use Illuminate\support\Facades\Hash;
+use Hash;
 use Illuminate\Support\Facades\Validator;
 
 use PHPMailer\PHPMailer\PHPMailer;
@@ -393,9 +393,10 @@ class AuthController extends Controller
     public function updateProfile(Request $request){
 
         $validator = Validator::make ($request->all(), [
-            // 'username' => 'required',
-            // 'email' => 'required',
-            'phone' => 'required',
+            // 'username' => 'required|unique:users|max:50',
+            // 'name' => 'required|max:50',
+            // 'email' => 'required|unique:users',
+            'phone' => 'required|max:13',
             'address' => 'required',
             'password' => 'required|min:8',
             'confirm_password' => 'same:password'
@@ -418,6 +419,7 @@ class AuthController extends Controller
         // dd($find_user);
         $data = [
             // 'username' => $request->username,
+            // 'name' => $request->name,
             // 'email' => $request->email,
             'phone' => $request->phone,
             'address' => $request->address,
@@ -446,6 +448,71 @@ class AuthController extends Controller
                 'data' =>   (object) array(),
             ];
 
+            return response()->json($response);
+        }
+    }
+
+    public function googleApi(Request $request) {
+        $user_email = $request->email;
+        $user_first_name = $request->first_name;
+
+        $data = [
+            'first_name' => $user_first_name,
+            'email' => $user_email,
+            'username' => $user_first_name,
+            'roles' => 'customer',
+            'device_token' => $request->device_token,
+            'device_id' => $request->device_id,
+            'status' => 1,
+        ];
+
+        // dd($data);
+
+        $existedCustomer = User::where('email', $user_email)->first();
+
+        if (!empty($existedCustomer)) 
+        {
+            $existedCustomer->update($data);
+
+            $tokenResult = $existedCustomer->createToken('customer');
+            $token = $tokenResult->token;
+            $token->expires_at = Carbon::now()->addDays(1);
+            $response = [
+                'status' => 1,
+                'method' => $request->route()->getActionMethod(),
+                'message' => "Customer Login Successfully.",
+                'access_token' => $tokenResult->accessToken,
+                'token_type' => 'Bearer',
+                'expires_at' => Carbon::parse(
+                        $tokenResult->token->expires_at
+                )->toDateTimeString()
+            ];
+            return response()->json($response);
+        } 
+        else 
+        {
+            $newCustomer = User::create($data);
+            // dd($newCustomer);
+            $customer = [
+                'first_name' => $newCustomer->first_name,
+                'email' => $newCustomer->email,
+            ];
+
+            $tokenResult = $newCustomer->createToken('customer');
+            $token = $tokenResult->token;
+            $token->expires_at = Carbon::now()->addDays(1);
+            $response = [
+                'status' => 1,
+                'method' => $request->route()->getActionMethod(),
+                'message' => "Customer Login Successfully.",
+                'access_token' => $tokenResult->accessToken,
+                'token_type' => 'Bearer',
+                'customer_id' => $newCustomer->id,
+                'customer_profile' => $customer,
+                'expires_at' => Carbon::parse(
+                        $tokenResult->token->expires_at
+                )->toDateTimeString()
+            ];
             return response()->json($response);
         }
     }

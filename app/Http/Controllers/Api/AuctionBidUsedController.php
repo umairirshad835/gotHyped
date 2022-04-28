@@ -29,8 +29,7 @@ class AuctionBidUsedController extends Controller
     public function auctionBidding(Request $request)
     {
         $validator = Validator::make ($request->all(), [
-            'auction_id' => 'required',
-            'flag' => 'required',
+            'auction_id' => 'required'
         ]);
 
         if($validator->fails())
@@ -48,7 +47,6 @@ class AuctionBidUsedController extends Controller
 	    $userId = $user->id;
 
         $assume_price = 0.00;
-        $flag = $request->flag;
         $auctionId = $request->auction_id;
 
         $check_auction = AuctionStart::where('auction_id',$auctionId)->first();
@@ -64,119 +62,125 @@ class AuctionBidUsedController extends Controller
         }
 
         // calculate time from auction start if not exist then get time from product
-        $updateTime = isset($check_auction->updated_at) ? $check_auction->updated_at :$check_product->updated_at;
-        $crtime = Carbon::now();
-        $timecalc = $crtime->diff($updateTime);
-        $timeDiff = $timecalc->s;
+        // $updateTime = isset($check_auction->updated_at) ? $check_auction->updated_at :$check_product->updated_at;
+        // $crtime = Carbon::now();
+        // $timecalc = $crtime->diff($updateTime);
+        // $timeDiff = $timecalc->s;
 
-        if($auction_price_now >= $check_product->auction_price)
-        {
-            if($flag == 0)
-            {   
-                if($timeDiff >= 5 && $flag == 0)
-                {
-                    $winner_data = [
-                        'user_id' => $check_auction->last_user_id,
-                        'product_id' => $auctionId,
-                        'total_bids' => $check_auction->current_bid_used,
-                        'auction_close_price' => $check_auction->current_price,
-                        'created_at' => Carbon::now(),
-                        'updated_at' => Carbon::now(),
-                    ];
+        // if($auction_price_now >= $check_product->auction_price)
+        // {
+        //     if($flag == 0)
+        //     {   
+        //         if($timeDiff >= 5 && $flag == 0)
+        //         {
+        //             $winner_data = [
+        //                 'user_id' => $check_auction->last_user_id,
+        //                 'product_id' => $auctionId,
+        //                 'total_bids' => $check_auction->current_bid_used,
+        //                 'auction_close_price' => $check_auction->current_price,
+        //                 'created_at' => Carbon::now(),
+        //                 'updated_at' => Carbon::now(),
+        //             ];
         
-                    $winner = Winner::create($winner_data);
+        //             $winner = Winner::create($winner_data);
 
-                    if($winner)
-                    {
-                        $returnBids = AuctionBidUsed::where('auction_id',$auctionId)->where('user_id',$check_auction->last_user_id)->first();
+        //             // if($winner)
+        //             // {
+        //             //     $returnBids = AuctionBidUsed::where('auction_id',$auctionId)->where('user_id',$check_auction->last_user_id)->first();
     
-                        $addBids = UserBid::where('user_id',$check_auction->last_user_id)->increment('total_bids',$returnBids->bid_used);
-                    }
+        //             //     $addBids = UserBid::where('user_id',$check_auction->last_user_id)->increment('total_bids',$returnBids->bid_used);
+        //             // }
 
-                    // get all losers data except winner
-                    $winner_id = Winner::where('product_id',$auctionId)->first();
-                    $losers = AuctionBidUsed::where('auction_id', $auctionId)->where('user_id', '!=', $winner_id->user_id)->get();
+        //             // Winner data
+        //             // $winner_id = Winner::with('winuser')->where('product_id',$auctionId)->first();
 
-                    foreach($losers as $loser)
-                    {
-                        $data = new Loser;
-                        $data->auction_id = $loser->auction_id;
-                        $data->user_id = $loser->user_id;
-                        $data->lost_bids = $loser->bid_used;
-                        $data->save();
-                    }
+        //             // get all losers data except winner
+        //             // $losers = AuctionBidUsed::with('users')->where('auction_id', $auctionId)->where('user_id', '!=', $winner_id->user_id)->get();
 
-                    $win_data = [
-                        'winner' => $winner,
-                        'loser' => $losers,
-                        'bids_returned' => $addBids,
-                    ];
+        //             // foreach($losers as $loser)
+        //             // {
+        //             //     $data = new Loser;
+        //             //     $data->auction_id = $loser->auction_id;
+        //             //     $data->user_id = $loser->user_id;
+        //             //     $data->lost_bids = $loser->bid_used;
+        //             //     $data->save();
+        //             // }
 
-                    $response = [
-                        'status' => 2,
-                        'message' => 'Auction Win',
-                        'method' => $request->route()->getActionMethod(),
-                        'data' => $win_data,
-                    ];
-                    return response()->json($response);
-                }
-            }
-            else
+        //             // $response = [
+        //             //     'status' => 2,
+        //             //     'message' => 'Auction Win',
+        //             //     'method' => $request->route()->getActionMethod(),
+        //             //     // 'winner' => $winner_id,
+        //             //     // 'loser' => $losers,
+        //             //     // 'bids_returned' => $addBids,
+        //             // ];
+        //             // return response()->json($response);
+        //         }
+        //     }
+        //     else
+        //     {
+        //         $data = $this->manageAuction($auctionId,$userId);
+    
+        //         $current_price = $data['current_price'];
+        //         $winner = User::where('id',$data['last_user_id'])->first();
+
+        //         if($data == 0)
+        //         {
+        //             $responses = [
+        //                 'status' => 0,
+        //                 'message' => 'Auction Not Found',
+        //                 'method' => $request->route()->getActionMethod(),
+        //                 'winner' =>$winner,
+        //                 'current_price' => $current_price
+        //             ];
+        //                 return response()->json($responses);
+        //         }
+
+        //         $responses = [
+        //             'status' => 1,
+        //             'message' => 'Bid Successfully',
+        //             'method' => $request->route()->getActionMethod(),
+        //         ];
+        //             return response()->json($responses);
+        //     }
+        // }
+        // else
+        // {
+            $data = $this->manageAuction($auctionId,$userId);
+            
+            $current_price = $data['current_price'];
+            $winner = User::where('id',$data['last_user_id'])->first();
+            if($data == 0)
             {
-                $this->auctionUser($auctionId,$userId);
-            }
-        }
-        else
-        {
-            $this->auctionUser($auctionId,$userId);
-        }
-    }
-
-    public function botUser()
-    {
-           $botUser = new User();
-
-           $botUser->name = BotUser::BotName();
-           $botUser->username = BotUser::BotUserName();
-           $botUser->email = $botUser->username."@gothyped.com";
-           $botUser->phone = '03007798998';
-           $botUser->password =  bcrypt(12345);
-           $botUser->roles  = 'bot';
-           $botUser->status  = 1;
-
-           $botUser->save();
-
-           if($botUser)
-           {
-                $response = [
-                    'status' => 1,
-                    'message' => $botUser->username. " Bid Successfully",
-                    'data' => $botUser,
+                $responses = [
+                    'status' => 0,
+                    'message' => 'Auction Not Found',
+                    'method' => $request->route()->getActionMethod(),
+                    'current_price' => 0
                 ];
-                return response()->json($response);
-           }
-           else{
-            $response = [
-                'status' => 1,
-                'message' => 'User Bot Not Generated',
-                'data' => (object) array(),
-            ];
-            return response()->json($response);
-           }
+                    return response()->json($responses);
+            }
+                $responses = [
+                    'status' => 1,
+                    'message' => 'Bid Successfully',
+                    'method' => $request->route()->getActionMethod(),
+                    'current_price' => $current_price
+                ];
+                    return response()->json($responses);
+        // }
     }
 
-    public function auctionUser($auctionId,$userId)
+    public function manageAuction($auctionId,$userId)
     {
         $bidUsed = 0;
         $currentprice = 0.00;
 
         $find_auction = Product::where('id', $auctionId)->where('auction_status', 1)->first();
-        
         if(!empty($find_auction))
         {
             $check_acution = AuctionBidUsed::where('auction_id',$auctionId)->where('user_id',$userId)->first();
-
-            if(!empty($check_acution)){
+            if(!empty($check_acution))
+            {
                 $bidUsed = $check_acution->bid_used;
             }
 
@@ -197,9 +201,11 @@ class AuctionBidUsedController extends Controller
             }
 
             $totalBids = AuctionBidUsed::where('auction_id',$auctionId)->sum('bid_used');
-            $acution_start = AuctionStart::where('auction_id',$auctionId)->first();
 
-            if(!empty($acution_start)){
+            $acution_start = AuctionStart::with('users')->where('auction_id',$auctionId)->first();
+            // dd($acution_start);
+            if(!empty($acution_start))
+            {
                 $currentauctionprice = $acution_start->current_price;
                 $currentbidprice = $currentauctionprice+0.01;
             }
@@ -216,14 +222,90 @@ class AuctionBidUsedController extends Controller
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ];
+            
+            $auctionStart = AuctionStart::with('users')->updateOrInsert(['auction_id' => $auctionId], $auction_data);
 
-            $auctionStart = AuctionStart::updateOrInsert(['auction_id' => $auctionId], $auction_data);
-
-            return $data;
+            return $auction_data;
         }
+        else
+        {
+            return 0;
+        }
+        
     }
 
+    public function currentAuctionUsers(Request $request)
+    {
+        $validator = Validator::make ($request->all(), [
+            'auction_id' => 'required',
+        ]);
 
+        if($validator->fails())
+        {
+            $error = $validator->errors();
+            $response = [
+                'status' => 0,
+                'message' => 'Choose an auction first',
+                'error' => $error
+            ];
+            return response()->json($response);
+        }
+
+        $auctionId = $request->auction_id;
+
+        $winner_user = AuctionStart::with('users')->where('auction_id',$auctionId)->first();
+
+        if($winner_user)
+        {
+            $all_bidding_users = AuctionBidUsed::select('id','user_id','auction_id')
+            ->whereHas('users', function($query) use($winner_user){
+                $query->select('id','name')->where('user_id','!=', $winner_user['last_user_id']);
+            })
+            ->where('auction_id',$auctionId)->get();
+    
+            foreach($all_bidding_users as $key => $username)
+            {
+                $users_name = $username->users[0]->name;
+            }
+
+            $actual_winner = Winner::with('winuser')->where('product_id',$auctionId)->first();
+            $actual_losers = Loser::with('auctionLoser')->where('auction_id',$auctionId)->get();
+
+            if(!empty($actual_winner))
+            {
+                $response = [
+                    'status' => 2,
+                    'message' => 'Winner Announced',
+                    'method' => $request->route()->getActionMethod(),
+                    'actual_winner' => $actual_winner,
+                    'actual_losers' => $actual_losers,
+                ];
+                return response()->json($response);
+            }
+
+            $response = [
+                'status' => 1,
+                'message' => 'Auction All users',
+                'method' => $request->route()->getActionMethod(),
+                'winner' => $winner_user,
+                'other_user' => $all_bidding_users,
+            ];
+                return response()->json($response);
+        }
+        else
+        {
+            $response = [
+                'status' => 0,
+                'message' => 'This Auction have no users yet',
+                'method' => $request->route()->getActionMethod(),
+                'winner' => (object) array(),
+                'other_user' => (object) array(),
+            ];
+                return response()->json($response);
+        }
+        
+    }
+    
     public function getMarketPrice($auctionId)
     {
         $error = '';
@@ -244,7 +326,7 @@ class AuctionBidUsedController extends Controller
         {
             $response = [
                 'status' => 1,
-                'message' => 'Customer Auction Product Find Successfully',
+                'message' => 'Customer Auction Find Successfully',
                 'data' => $find_auction,
             ];
 
@@ -253,8 +335,8 @@ class AuctionBidUsedController extends Controller
         else
         {
             $response = [
-                'status' => 1,
-                'message' => 'Customer Auction Product Find Successfully',
+                'status' => 0,
+                'message' => 'Customer Auction Not Found',
                 'data' => (object) array(),
             ];
 
@@ -286,6 +368,19 @@ class AuctionBidUsedController extends Controller
 
         $find_auction = Product::where('id', $auctionId)->where('auction_status', 1)->first();
         $find_wallet  = UserWallet::where('user_id',$userId)->first();
+        
+        if(empty($find_wallet))
+        {
+            $response = [
+                'status' => 0,
+                'message' => 'Customer Wallet Not Found',
+                'method' => $request->route()->getActionMethod(),
+                'data' => (object) array(),
+            ];
+
+            return response()->json($response);
+        }
+
         $update_wallet = $find_auction->market_price + $find_wallet->wallet_amount;
 
         if($update_wallet)
@@ -309,7 +404,7 @@ class AuctionBidUsedController extends Controller
         {
             $response = [
                 'status' => 0,
-                'message' => 'Customer Wallet Not Updated',
+                'message' => 'Customer Wallet Not Found',
                 'method' => $request->route()->getActionMethod(),
                 'data' => (object) array(),
             ];

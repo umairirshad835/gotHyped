@@ -15,7 +15,8 @@
         
         <form method="POST" action="{{ route('updateProduct') }}" autocomplete="off" enctype="multipart/form-data" class="card">
             @csrf
-            <input type="hidden" name="product_id" value="{{$product->id}}">
+            <input type="hidden" name="product_id" id="product_id" value="{{$product->id}}">
+            
             <div class="card-header" style="background-color:#5ba9dc;color:white;">
                 <h3 class="card-title">Edit Product</h3>
             </div>
@@ -35,7 +36,7 @@
                     <div class="col-xl-6 col-md-6">
                         <div class="form-group">
                             <label class="form-label"> Category</label>
-                            <select class="form-control form-select @error('category') is-invalid @enderror" data-placeholder="Choose one" name="category">
+                            <select class="form-control form-select @error('category') is-invalid @enderror" data-placeholder="Choose one" name="category" id="category">
                                     <option label="Choose one"></option>
                                     @foreach($categories as $category)
                                         <option value="{{$category->id}}" {{$product->category_id == $category->id ? 'selected' : ''}}>{{$category->name}}</option>
@@ -90,7 +91,7 @@
                     <div class="col-xl-6 col-md-6">
                         <div class="form-group">
                             <label class="form-label">Previous Time of Auction</label>
-                            <input id="auction_time" class="form-control" value="{{ \Carbon\Carbon::parse($product->auction_time)->format('m/d/Y h:m A')}}" type="text"  readonly="">
+                            <input id="auction_time" name="auction_time" class="form-control" value="{{ \Carbon\Carbon::parse($product->auction_time)->format('m/d/Y h:m A')}}" type="text"  readonly="">
                         </div>
                     </div>
                     <div class="col-xl-6 col-md-6">
@@ -192,8 +193,13 @@
                         </div>
                     </div>
                 </div>    
+
+                <div class="row" id="size">
                 
-                <button type="submit" class="btn py-1 px-4 mb-1" style="background-color:#5ba9dc;color:white;">Update product</button>
+                </div>
+                <br>
+                <br>
+                <button type="submit" class="btn py-1 px-4 mb-1" style="background-color:#5ba9dc;color:white;">Update auction</button>
             </div>
         </form>
     </div>
@@ -202,3 +208,63 @@
 </div>
 
 @endsection('content')
+
+@section('custom-js')
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+<script>
+
+$(document).ready(function() {
+
+    var productId = $('#product_id').val();
+    var categoryID = $('#category').val();
+
+        editSize(categoryID,productId);
+
+    function editSize(categoryID,productId)
+    {
+        $.ajax({
+            url: '/check-size/'+categoryID+'/'+productId,
+            type: "GET",
+            data : {"_token":"{{ csrf_token() }}"},
+            dataType: "json",
+            success:function(data)
+            {
+                $('#size').empty();
+
+                $.each(data.size, function (index, el) {
+                    var select_size = '';
+                    var flag = 0;
+                    
+                    $.each(data.productSize, function (key, val)
+                    {
+                        if(el['id'] == val['size_id'] && val['status'] == 1)
+                        {
+                            select_size = 'checked';
+                            flag = 1;
+                        }
+                         
+                    });
+                    $('#size').append('<div class="col-xl-3 col-md-3">'
+                    +'<label class="form-label">'
+                    +'<input type="checkbox" name="size_id['+index+']" value="'+ el['id'] +'" '+select_size+'>'
+                    + el['name']+ ' </label></div>');
+                    
+                });
+            }
+        });
+    }
+
+    $('#category').on('change', function() {
+
+        var productId = $('#product_id').val();
+        var categoryID = $(this).val();
+
+        editSize(categoryID,productId);
+    });
+});
+
+</script>
+
+@endsection('custom-js')

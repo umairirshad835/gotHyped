@@ -11,7 +11,8 @@ class ProductSizeController extends Controller
     public function sizeList(){
 
         $sizeList = ProductSize::paginate(25);
-        return view('Admin.size.index',compact('sizeList'));
+        // dd($sizeList);
+            return view('Admin.size.index',compact('sizeList'));
     }
 
     public function addSize(){

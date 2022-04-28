@@ -12,10 +12,22 @@ class AuctionBidUsed extends Model
     protected $fillale = [
         'auction_id',
         'user_id',
-        'bid used',
+        'bid_used',
     ];
 
     public function users(){
         return $this->hasMany(User::class,'id','user_id');
+    }
+
+    public function product(){
+        return $this->hasMany(Product::class,'id','auction_id');
+    }
+
+    public function winner(){
+        return $this->belongsTo(Winner::class,'user_id','user_id');
+    }
+
+    public function auctionStart(){
+        return $this->hasMany(AuctionStart::class,'auction_id','auction_id');
     }
 }

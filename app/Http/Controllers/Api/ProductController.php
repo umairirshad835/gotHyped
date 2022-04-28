@@ -11,7 +11,14 @@ class ProductController extends Controller
 {
     public function auctions()
     {
-        $auctions = Product::with('sizes.sizeName')->where('status',1)->get();
+        $user = Auth()->user()->username;
+        $link = "https://dashboard.gothyped.com/".$user;
+
+        $auctions = Product::with(['sizes.sizeName','favorite','alert'])->where('status',1)->whereIn('auction_status', [0,1])->get();
+        foreach($auctions as $key => $item){
+            $auctions[$key]['link'] = $link;
+        }
+        
         if(!empty($auctions))
         {
             $response = [

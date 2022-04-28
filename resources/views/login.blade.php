@@ -39,11 +39,6 @@
 
     <!-- BACKGROUND-IMAGE -->
     <div class="login-img">
-
-        <!-- GLOBAL-LOADER -->
-    <div id="global-loader">
-        <img src="{{ asset('assets/images/loader.svg') }}" class="loader-img" alt="Loader">
-    </div>
     <!-- /GLOBAL-LOADER -->
 
         <!-- PAGE -->
@@ -53,7 +48,7 @@
                 <!-- CONTAINER OPEN -->
                 <div class="col col-login mx-auto mt-7">
                     <div class="text-center">
-                        <img src="{{ asset('assets/images/brand/logo-white.png') }}" class="header-brand-img" alt="">
+                        <img src="{{ asset('assets/images/brand/login-Logo.png') }}" class="header-brand-img" alt="" style="width:260px;">
                     </div>
                 </div>
 
@@ -73,7 +68,7 @@
                                 </div>
                                 <div class="panel-body tabs-menu-body p-0 pt-5">
                                     <div class="tab-content">
-                                        <form method="POST" action="/userLogin" >
+                                        <form method="POST" action="{{route('userlogin')}}" >
                                             @csrf
                                             <div class="tab-pane active" id="tab5">
                                                 <div class="wrap-input100 validate-input input-group" data-bs-validate="Valid email is required: ex@abc.xyz">
@@ -83,8 +78,8 @@
                                                     <input class="input100 border-start-0 form-control ms-0 @error('email') is-invalid @enderror" value="{{ old('email') }}" type="email" placeholder="Email" name="email">
                                                 </div>
                                                 
-                                                @error('email')
-                                                        <span class="invalid-feedback" role="alert">
+                                                    @error('email')
+                                                        <span class="text-danger">
                                                             <strong>{{ $message }}</strong>
                                                         </span>
                                                     @enderror
@@ -96,8 +91,8 @@
                                                     <input class="input100 border-start-0 form-control ms-0 @error('password') is-invalid @enderror" value="{{ old('password') }}" type="password" placeholder="Password" name="password">
                                                 </div>
 
-                                                @error('password')
-                                                        <span class="invalid-feedback" role="alert">
+                                                    @error('password')
+                                                        <span class="text-danger">
                                                             <strong>{{ $message }}</strong>
                                                         </span>
                                                     @enderror

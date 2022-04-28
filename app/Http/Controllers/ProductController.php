@@ -11,28 +11,32 @@ use App\Models\AssignProductSize;
 use App\Models\CategorySize;
 use App\Models\Winner;
 use App\Models\User;
+use App\Models\AuctionBidUsed;
+use App\Models\AuctionStart;
 
 
 class ProductController extends Controller
 {
-    public function productList()
-    {
-
-        $productList = Product::with('category')->paginate(25);
-        return view('Admin.product.index',compact('productList'));
-    }
-
+    
     public function addProduct()
     {
         $all_category = Category::all();
             return view('Admin.product.add-product',compact('all_category'));
     }
 
-    public function getSizes($id)
+    public function AssignSize($id)
     {
         $category_size = CategorySize::where('cat_id',$id)->pluck('size_id');
-        $size = ProductSize::whereIn('id',$category_size)->get();
-            return response()->json($size);
+        $data['size'] = ProductSize::whereIn('id',$category_size)->get();
+            return response()->json($data);
+    }
+
+    public function editSizes($id,$productId)
+    {
+        $category_size = CategorySize::where('cat_id',$id)->pluck('size_id');
+        $data['size'] = ProductSize::whereIn('id',$category_size)->get();
+        $data['productSize'] = AssignProductSize::where('product_id',$productId)->select('size_id','status')->get();
+            return response()->json($data);
     }
 
     public function saveProduct(Request $request)
@@ -64,34 +68,29 @@ class ProductController extends Controller
         }
             
         // make directory if not exists    
-        $upload_dir = 'uploads';
+        $upload_dir = 'uploads/Product/';
         if(!is_dir($upload_dir)) 
             mkdir($upload_dir, 0755, true);
-
-        $product_dir = $upload_dir.'/'.$request->name;
-        if(!is_dir($product_dir)) 
-            mkdir($product_dir, 0755, true);
-        
         
         // check if image2 and image3 exists to get path to store in DB
-        $mainimage_path = $product_dir.'/'.$Image1;
+        $mainimage_path = str_replace(' ','_',$upload_dir.$Image1);
 
         if(!empty($Image2)){
-            $imagetwo_path = $product_dir.'/'.$Image2;
+            $imagetwo_path = str_replace(' ','_',$upload_dir.$Image2);
         }
            
         if(!empty($Image3)) {
-            $imagethree_path = $product_dir.'/'.$Image3;
+            $imagethree_path = str_replace(' ','_',$upload_dir.$Image3);
         }  
         
         //move Images to directory
-        $mainimage->move($product_dir,$Image1);
+        $mainimage->move($upload_dir,str_replace(' ','_',$Image1));
 
         if(!empty($imagetwo)){
-            $imagetwo->move($product_dir,$Image2);
+            $imagetwo->move($upload_dir,str_replace(' ','_',$Image2));
         }
         if(!empty($imagethree)){
-            $imagethree->move($product_dir,$Image3);
+            $imagethree->move($upload_dir,str_replace(' ','_',$Image3));
         }
         
         $data = [
@@ -124,7 +123,7 @@ class ProductController extends Controller
         }
 
         if($product){
-            return redirect()->route('productList')->with('success','product Save Successfully');
+            return redirect()->route('pendingAuctions')->with('success','product Added Successfully');
         }
     }
 
@@ -132,8 +131,8 @@ class ProductController extends Controller
     {
         $categories = Category::all();
         $product = Product::find($id);
-        // dd($product);
-        return view('Admin.product.update-product',compact('product','categories'));
+
+            return view('Admin.product.update-product',compact('product','categories'));
     }
 
     public function updateProduct(Request $request)
@@ -155,10 +154,12 @@ class ProductController extends Controller
         
         $newDateTime = $request->new_auction_time;
         if($newDateTime){
-            $updateDateTime = $request->new_auction_time;
+            $updateDateTime = date('Y-m-d H:i', strtotime($request->new_auction_time));
         }else{
             $updateDateTime = $product->auction_time;
         }
+
+        //  dd($updateDateTime);
 
         // get main Image
         $mainimage = $request->file('new_main_image');
@@ -188,46 +189,41 @@ class ProductController extends Controller
         }
             
         // make directory if not exists    
-        $upload_dir = 'uploads';
+        $upload_dir = 'uploads/Product/';
         if(!is_dir($upload_dir)) 
             mkdir($upload_dir, 0755, true);
 
-        $product_dir = $upload_dir.'/'.$request->name;
-        if(!is_dir($product_dir)) 
-            mkdir($product_dir, 0755, true);
-        
-        
         // check if image2 and image3 exists to get path to store in DB
 
         if(!empty($mainimage)){
-            $mainimage_path = $product_dir.'/'.$Image1;
+            $mainimage_path = str_replace(' ','_',$upload_dir.$Image1);
         }else{
             $mainimage_path = $Image1;
         }
         
         if(!empty($imagetwo)){
-            $imagetwo_path = $product_dir.'/'.$Image2;
+            $imagetwo_path = str_replace(' ','_',$upload_dir.$Image2);
         }else{
             $imagetwo_path = $Image2;
         }
            
         if(!empty($imagethree)) {
-            $imagethree_path = $product_dir.'/'.$Image3;
+            $imagethree_path = str_replace(' ','_',$upload_dir.$Image3);
         }else{
             $imagethree_path = $Image3;
         }  
         
         //move Images to directory
         if(!empty($mainimage)){
-            $mainimage->move($product_dir,$Image1);
+            $mainimage->move($upload_dir,str_replace(' ','_',$Image1));
         }
         
         if(!empty($imagetwo)){
-            $imagetwo->move($product_dir,$Image2);
+            $imagetwo->move($upload_dir,str_replace(' ','_',$Image2));
         }
         
         if(!empty($imagethree)){
-            $imagethree->move($product_dir,$Image3);
+            $imagethree->move($upload_dir,str_replace(' ','_',$Image3));
         }
 
         $data = [
@@ -236,17 +232,30 @@ class ProductController extends Controller
             'actual_price' => $request->actual_price,
             'market_price' => $request->market_price,
             'auction_price' => $request->auction_price,
-            'auction_time' => date('Y-m-d H:i', strtotime($request->new_auction_time)),
+            'auction_time' => $updateDateTime,
             'description' => $request->descripton,
             'image1' => $mainimage_path,
             'image2' => isset($imagetwo_path) ? $imagetwo_path : '',
             'image3' => isset($imagethree_path) ? $imagethree_path : '',
         ];
 
-        // dd(date('Y-m-d H:i', strtotime($request->new_auction_time)));
+        //  dd(date('Y-m-d H:i', strtotime($request->new_auction_time)));
 
-        $product->update($data);
-            return redirect()->route('productList')->with('success','Product Updated Successfully');
+        $update_product = $product->update($data);
+
+        if($update_product)
+        {
+            $size_id = $request->size_id;
+            $product_id = $request->product_id;
+            $flag = $request->flag;
+
+            $getSizes = AssignProductSize::where('product_id', $product_id)->update(['status' => 0]);
+            foreach($size_id as $key => $id)
+            {
+                $savesize = AssignProductSize::updateOrInsert(['product_id' => $product_id, 'size_id' => $id],['size_id' => $id,'product_id' => $product_id, 'status' => 1]);
+            }
+        }
+            return redirect()->route('pendingAuctions')->with('success','Product Updated Successfully');
        
     }
 
@@ -254,32 +263,6 @@ class ProductController extends Controller
     {
         $size = Product::where('id',$id)->delete();
             return redirect()->route('productList')->with('success','Product deleted');
-    }
-
-    public function assignSize($id)
-    {
-        $product = Product::find($id);
-        $categorySizes = CategorySize::where('cat_id',$product->category_id)->pluck('size_id');
-        $sizes = ProductSize::whereIn('id',$categorySizes)->get();
-
-        return view('Admin.product.assign-size',compact('sizes','product'));
-    }
-
-    public function saveProductSize(Request $request)
-    {
-        $size_id = $request->size_id;
-        $product_id = $request->product_id;
-        foreach($size_id as $key => $id)
-        {
-            $savesize = new AssignProductSize();
-
-            $savesize->product_id = $product_id;
-            $savesize->size_id = $size_id[$key];
-
-            $savesize->save();
-
-        }
-        return redirect()->route('productList')->with('success','Size Assigned Successfully');
     }
 
     public function changeProductStatus(Request $request, $id)
@@ -305,15 +288,24 @@ class ProductController extends Controller
 
     public function activeAuctions()
     {
-        $activeAuctions = Product::where('auction_status',1)->orderBy('auction_time','ASC')->paginate(25);
+        $activeAuctions = Product::with('category')->where('auction_status',1)
+        ->whereHas('AuctionStart',function($query){
+            $query->select('id','last_user_id','current_bid_used','current_price')
+            ->with([
+                'users' => function($q){
+                    $q->select('id','name');
+                },
+            ]);
+        })
+        ->orderBy('auction_time','ASC')->paginate(25);
         
             return view('Admin.auctions.active',compact('activeAuctions'));
     }
 
     public function completedAuctions()
     {
-        $completedAuctions = Product::where('auction_status',2)->orderBy('auction_time','ASC')->paginate(25);
-        
+        $completedAuctions = Product::with(['category','winner.user'])->where('auction_status',2)->paginate(25);;
+        // dd($completedAuctions);
             return view('Admin.auctions.expire',compact('completedAuctions'));
     }
 
@@ -334,19 +326,40 @@ class ProductController extends Controller
     {
         // product data
         $product = Product::with('category')->find($id);
-        $sizes_id = AssignProductSize::where('product_id',$product->id)->pluck('size_id');
+        $sizes_id = AssignProductSize::where('product_id',$product->id)->where('status',1)->pluck('size_id');
         $sizenames = ProductSize::whereIn('id',$sizes_id)->get();
 
+        // dd($product);
         
-        // Winner data of Auction
-        $winner = Winner::with(['user','shippingAddress.address'])->where('product_id',$product->id)->first();
-        //  dump($winner);
+        return view('Admin.product.view-product',compact('product','sizenames'));
+    }
 
-        $user_bot = Winner::with(['user'])->where('product_id',$product->id)->first();
-        $user = User::where('id',$user_bot->user_id)->first();
+    public function previewActiveProduct($id)
+    {
+        $product = Product::with('category')->find($id);
+        $auctin_start = AuctionStart::where('auction_id',$product->id)->first();
         
+        // Active auctions preview
+        $activepreview = AuctionBidUsed::with(['product','users','auctionStart'])->where('auction_id',$product->id)->paginate(25);
+
+        //  dd($activepreview);
         
-        return view('Admin.product.view-product',compact('product','sizenames','winner','user'));
+        return view('Admin.product.view-active-product',compact('product','activepreview','auctin_start'));
+    }
+
+    public function previewCompletedProduct($id)
+    {
+        $product = Product::with('category')->find($id);
+
+        // complete auctions preview
+
+        $completeview = AuctionBidUsed::with(['product','users','winner'])->where('auction_id',$product->id)->orderBy('id','DESC')->paginate(25);
+
+        $winner = Winner::where('product_id',$product->id)->first();
+
+        //   dd($winner);
+        
+        return view('Admin.product.view-complete-product',compact('product','completeview','winner'));
     }
 
 }

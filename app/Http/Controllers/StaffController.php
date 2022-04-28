@@ -3,14 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
 use App\Models\User;
 
 class StaffController extends Controller
 {
     public function staffList(){
 
-        $staffList = User::paginate(25);
-        return view('Admin.Staff.index',compact('staffList'));
+        $staffList = User::whereIn('roles',['admin','manager','user'])->paginate(25);
+        
+            return view('Admin.Staff.index',compact('staffList'));
     }
 
     public function addStaff(){
@@ -93,7 +95,7 @@ class StaffController extends Controller
         
         $updateStatus->update($status);
         
-            return redirect()->route('staffList')->with('success','User Status change Successfully');
+            return redirect()->back()->with('success','User Status change Successfully');
     }
 
 }

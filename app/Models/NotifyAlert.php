@@ -14,4 +14,8 @@ class NotifyAlert extends Model
         'product_id',
         'status',
     ];
+
+    public function product(){
+        return $this->hasMany(Product::class,'id','product_id');
+    }
 }

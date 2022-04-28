@@ -24,7 +24,7 @@ class UserProfileController extends Controller
         
         if(!empty($userId))
         {
-            $user = User::where('id',$userId)->select('name','address')->first();
+            $user = User::where('id',$userId)->first();
             $bids = UserBid::where('id',$userId)->select('total_bids')->first();
             $userAuctionWins = Winner::with('product.sizes')->where('user_id',$userId)->get();
             $userLikeproducts = FavoriteItem::with('product.sizes')->where('user_id',$userId)->get();

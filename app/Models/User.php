@@ -24,8 +24,12 @@ class User extends Authenticatable
         'phone',
         'address',
         'roles',
+        'profile',
         'status',
-        'username'
+        'username',
+        'first_name',
+        'device_token',
+        'device_id',
     ];
 
     /**

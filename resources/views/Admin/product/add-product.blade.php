@@ -9,14 +9,14 @@
 
         <!-- PAGE-HEADER -->
         <div class="page-header">
-            <h1 class="page-title">Manage Product</h1>
+            <h1 class="page-title">Add Auction</h1>
         </div>
         <!-- PAGE-HEADER END -->
         
         <form method="POST" action="{{ route('saveProduct') }}" autocomplete="off" enctype="multipart/form-data" class="card">
             @csrf
             <div class="card-header" style="background-color:#5ba9dc;color:white;">
-                <h3 class="card-title">Add New Product</h3>
+                <h3 class="card-title">Add New Auction</h3>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -134,7 +134,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xl-6 col-md-6">
+                    <div class="col-xl-12 col-md-12">
                         <div class="form-group">
                             <label class="form-label">Description</label>
                             <input id="descripton" class="form-control @error('descripton') is-invalid @enderror" value="{{ old('descripton') }}" name="descripton" type="text" placeholder="Enter description">
@@ -146,10 +146,13 @@
                         </div>
                     </div>
                 </div>
+                
                 <div class="row" id="size">
 
                 </div>
-                        <button type="submit" class="btn py-1 px-4 mb-1" style="background-color:#5ba9dc;color:white;">Add product</button>
+                <br>
+                <br>
+                    <button type="submit" class="btn py-1 px-4 mb-1" style="background-color:#5ba9dc;color:white;">Add auction</button>
             </div>
         </form>
     </div>
@@ -162,40 +165,43 @@
 @section('custom-js')
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+
 <script>
 
 $(document).ready(function() {
+
+    function addSize(categoryID)
+    {
+        $.ajax({
+            url: '/add-size/'+categoryID,
+            type: "GET",
+            data : {"_token":"{{ csrf_token() }}"},
+            dataType: "json",
+            success:function(data)
+            {
+                $('#size').empty();
+
+                $.each(data.size, function (index, el) {
+                    
+                    $('#size').append('<div class="col-xl-3 col-md-3">'
+                    +'<label class="form-label">'
+                    +'<input type="checkbox" name="size_id['+index+']" value="'+ el['id'] +'">'
+                    + el['name']+ ' </label></div>');
+                    
+                });
+            }
+        });
+    }
+
     $('#category').on('change', function() {
-        // alert('data alert check');
+
         var categoryID = $(this).val();
-        if(categoryID) {
-            $.ajax({
-                url: '/get-size/'+categoryID,
-                type: "GET",
-                data : {"_token":"{{ csrf_token() }}"},
-                dataType: "json",
-                success:function(data)
-                {
-                    if(data)
-                    {
-                        $('#size').empty();
-                        $.each(data, function(key, size){
-                            $('#size').append('<div class="col-xl-3 col-md-3"><label class="form-label"><input type="checkbox" name="size_id['+key+']" value="'+ size.id +'">' + size.name+ ' </label></div>');
-                        });
-                    }
-                    else
-                    {
-                    $('#size').empty();
-                    }
-                }
-            });
-        }
-        else
-        {
-            $('#size').empty();
-        }
+
+        addSize(categoryID);
     });
 });
+
 </script>
 
 @endsection('custom-js')

@@ -15,7 +15,8 @@
         
         <form method="POST" action="{{ route('updateCategory') }}" autocomplete="off" class="card">
             @csrf
-                <input type="hidden" name="category_id" value="{{$category->id}}">
+                <input type="hidden" name="category_id" id="category_id" value="{{$category->id}}">
+
             <div class="card-header" style="background-color:#5ba9dc;color:white;">
                 <h3 class="card-title">Update Category</h3>
             </div>
@@ -61,7 +62,13 @@
                         </div>
                     </div>
                 </div>
-                        <button type="submit" class="btn py-1 px-4 mb-1" style="background-color:#5ba9dc;color:white;">Update category</button>
+                <div class="row" id="size">
+                
+                </div>
+                <br>
+
+                <button type="submit" class="btn py-1 px-4 mb-1" style="background-color:#5ba9dc;color:white;">Update category</button>
+
             </div>
         </form>
     </div>
@@ -70,3 +77,43 @@
 </div>
 
 @endsection('content')
+
+@section('custom-js')
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    
+    <script>
+
+    $(document).ready(function() {
+        
+        var categoryID = $('#category_id').val();
+
+        editSize(categoryID);
+
+        function editSize(categoryID,productId)
+        {
+            $.ajax({
+                url: '/get-category-size/'+categoryID,
+                type: "GET",
+                data : {"_token":"{{ csrf_token() }}"},
+                dataType: "json",
+                success:function(data)
+                {
+                    $('#size').empty();
+                    $.each(data.sizes, function (index, el) {
+                        var select_size = '';
+                        $.each(data.category_size, function (key, val){
+                                if(el['id'] == val['size_id']) {
+                                    select_size = 'checked';
+                            }
+                        });
+                        $('#size').append('<div class="col-xl-3 col-md-3"><label class="form-label"><input type="checkbox" name="size_id['+index+']" value="'+ el['id'] +'" '+select_size+'>' + el['name']+ ' </label></div>');
+                    });
+                }
+            });
+        }
+
+    });
+        
+    </script>
+@endsection('custom-js')

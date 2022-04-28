@@ -23,4 +23,8 @@ class UserShippingAddress extends Model
     public function winner(){
         return $this->belongsTo(Winner::class,'user_id','user_id');
     }
+
+    public function size(){
+        return $this->belongsTo(ProductSize::class);
+    }
 }

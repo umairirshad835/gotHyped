@@ -43,12 +43,15 @@ Route::post('/auth/customer-login', [AuthController::class, 'customerLogin']);
 Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('/auth/verify-otp', [AuthController::class, 'verifyOTP']);
 Route::post('/auth/reset-password', [AuthController::class, 'resetPassword']);
+// Social Login
+Route::post('/auth/social-login', [AuthController::class, 'googleApi']);
 
 Route::group(['middleware' => 'auth:api'], function () {
    
     //Auction
     Route::post('/auction-user', [AuctionUserEnteredController::class, 'auctionUsers']);
     Route::post('/auction-bidding', [AuctionBidUsedController::class, 'auctionBidding']);
+    Route::post('/current-auction-users', [AuctionBidUsedController::class, 'currentAuctionUsers']);
     Route::get('/get-market-price/{auctionId}',[AuctionBidUsedController::class, 'getMarketPrice']);
     Route::post('/save-market-price',[AuctionBidUsedController::class, 'saveMarketPrice']);
     Route::post('/user-address',[AuctionBidUsedController::class, 'userAddress']);
@@ -58,11 +61,14 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::get('/notifications', [NotificationsController::class, 'notification']);
 
     //Bid
-    Route::get('/subscription', [BidController::class, 'subscription']);
+    Route::get('/subscription', [BidController::class, 'subscription'])->name('subscriptionList');
     Route::get('/non-subscription', [BidController::class, 'nonSubscription']);
+    Route::post('/bid-purchased', [BidController::class, 'bidPurchased']);
+    Route::post('/subscription-purchase', [BidController::class, 'subscriptionPurchased']);
+    Route::get('get-status',[BidController::class,'getPaymentStatus'])->name('status');
 
     // check Bid of login User
-    Route::get('/check-user-bids',[UserBidController::class,'userBid']);
+    Route::get('/check-user-bids',[UserBidController::class,'userBid'])->name('checkBids');
 
     // Check balance of login user
     Route::get('/check-user-wallet',[UserWalletController::class,'userWallet']);
@@ -84,11 +90,9 @@ Route::group(['middleware' => 'auth:api'], function () {
     //update customer Profile
     Route::post('/update-profile',[AuthController::class,'updateProfile']);
 
-    //Update User Setting
+    // User Setting
     Route::post('/update-user-setting',[UserSettingController::class,'updateUserSetting']);
-
-    // Update User Profile Setting
-    Route::post('/update-user-profile-setting',[UserProfileSettingController::class,'updateUserProfileSetting']);
+    Route::get('/profile-setting',[UserProfileSettingController::class,'profileSetting']);
 
     // Profile view
     Route::get('/profile', [UserProfileController::class,'profileView']);

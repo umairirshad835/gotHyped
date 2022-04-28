@@ -13,8 +13,8 @@ class WinnersController extends Controller
 {
     public function winners(){
 
-        $winnersList = Winner::get();
-        // dd($winnersList);
+        $winnersList = Winner::with(['winuser','winproduct','WinnerBidwon'])->get();
+
         if(!$winnersList->isEmpty())
         {
             $response = [

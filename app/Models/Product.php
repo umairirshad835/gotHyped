@@ -37,7 +37,31 @@ class Product extends Model
         return $this->belongsTo(Winner::class,'product_id','id');
     }
 
-    public function favoriteProduct(){
-        return $this->belongsTo(FavoriteItem::class,'product_id','id');
+    // public function favoriteProduct(){
+    //     return $this->belongsTo(FavoriteItem::class,'product_id','id');
+    // }
+
+    public function productAlert(){
+        return $this->belongsTo(NotifyAlert::class,'product_id','id');
+    }
+
+    public function AuctionStart(){
+        return $this->hasMany(AuctionStart::class,'auction_id','id');
+    }
+
+    public function winner(){
+        return $this->hasMany(Winner::class,'product_id','id');
+    }
+
+    public function auctionBidUsed(){
+        return $this->belongsTo(AuctionBidUsed::class,'auction_id','id');
+    }
+
+    public function favorite(){
+        return $this->hasOne(FavoriteItem::class,'product_id','id');
+    } 
+
+    public function alert(){
+        return $this->hasOne(NotifyAlert::class,'product_id','id');
     }
 }

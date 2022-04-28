@@ -40,9 +40,6 @@ class CategoryController extends Controller
         $size_id = $request->size_id;
         $cat_id = $category->id;
 
-        // dump($cat_id);
-        // dd($size_id);
-
         foreach($size_id as $key => $id){
             $savesize = new CategorySize();
 
@@ -52,7 +49,8 @@ class CategoryController extends Controller
             $savesize->save();
         }
 
-        if($category){
+        if($category)
+        {
             return redirect()->route('categoryList')->with('success','Category Save Successfully');
         }
     }
@@ -60,7 +58,14 @@ class CategoryController extends Controller
     public function editCategory($id){
 
         $category = Category::find($id);
-        return view('Admin.category.update-category',compact('category'));
+            return view('Admin.category.update-category',compact('category'));
+    }
+
+    public function getSizes($id)
+    {
+        $data['sizes'] = ProductSize::all();
+        $data['category_size'] = CategorySize::where('cat_id',$id)->get();
+            return response()->json($data);
     }
 
     public function updateCategory(Request $request){
@@ -83,7 +88,17 @@ class CategoryController extends Controller
             'status' => $category_status,
         ];
 
-        $find_category->update($data);
+        $update_Category = $find_category->update($data);
+        if($update_Category)
+        {
+            $size_id = $request->size_id;
+            $cat_id = $request->category_id;
+            foreach($size_id as $id)
+            {
+                $savesize = CategorySize::updateOrInsert(['cat_id' => $cat_id, 'size_id' => $id],['size_id' => $id,'cat_id' => $cat_id]);
+            }
+            // $delete_size = CategorySize::where('cat_id', $cat_id)->whereNotIn('size_id',$size_id)->delete();
+        }
             return redirect()->route('categoryList')->with('success','Category Updated Successfully');
        
     }

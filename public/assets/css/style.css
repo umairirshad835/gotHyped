@@ -76164,6 +76164,7 @@ h1,
 h2,
 .h2 {
     font-size: 1.75rem;
+    color:blue;
 }
 
 h3,
@@ -76178,7 +76179,8 @@ h4,
 
 h5,
 .h5 {
-    font-size: 1rem;
+    font-size: 13px;
+    color:black;
 }
 
 h6,
