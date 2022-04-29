@@ -14,6 +14,7 @@ class BidPurchased extends Model
         'purchase_bids',
         'purchase_price',
         'status',
+        'payment_status',
     ];
 
 }

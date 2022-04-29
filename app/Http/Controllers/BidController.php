@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Bid;
+use App\Models\BidPurchased;
 
 use Illuminate\Support\Facades\Input;
 use PayPal\Api\Amount;
@@ -152,7 +153,7 @@ class BidController extends Controller
                     ->setPayer($payer)
                     ->setRedirectUrls($redirect_urls)
                     ->setTransactions(array($transaction));
-                //     dd($redirect_urls);
+                    // dd($redirect_urls);
                 /** dd($payment->create($this->_api_context));exit; **/
                 try {
         $payment->create($this->_api_context);
@@ -160,18 +161,18 @@ class BidController extends Controller
                 if (\Config::get('app.debug')) 
                 {
                 \Session::put('error', 'Connection timeout');
-                                return Redirect::route('getstatus');
+                    return Redirect::route('getstatus');
                 }
                 else 
                 {
                 \Session::put('error', 'Some error occur, sorry for inconvenient');
-                                return Redirect::route('getstatus');
+                    return Redirect::route('getstatus');
                 }
         }
         foreach ($payment->getLinks() as $link) {
                 if ($link->getRel() == 'approval_url') {
                 $redirect_url = $link->getHref();
-                                break;
+                    break;
                 }
         }
         /** add payment ID to session **/
@@ -186,8 +187,10 @@ class BidController extends Controller
 
     public function getPaymentStatus(Request $request)
     {
-                /** Get the payment ID before session clear **/
-                $payment_id = $request->paymentId;
+        $userId = Auth()->user()->id;
+        // dd($request->all());
+        /** Get the payment ID before session clear **/
+        $payment_id = $request->paymentId;
 
         /** clear the session payment ID **/
                  Session::forget('paypal_payment_id');
@@ -195,23 +198,70 @@ class BidController extends Controller
         \Session::put('error', 'Payment failed');
                     return Redirect::route('showStatus');
         }
-        
         $payment = Payment::get($payment_id, $this->_api_context);
                 $execution = new PaymentExecution();
                 $execution->setPayerId($request->PayerID);
         /**Execute the payment **/
                 $result = $payment->execute($execution, $this->_api_context);
+                \Session::put('pkgId', 'Payment success');
         if ($result->getState() == 'approved') {
+            $this->BidPurchased();
         \Session::put('success', 'Payment success');
-                    return Redirect::route('showStatus');
+            return Redirect::route('showStatus');
         }
         \Session::put('error', 'Payment failed');
-                return Redirect::route('showStatus');
+             return Redirect::route('showStatus');
     }
 
-    public function ABC(Request $request){
-        //  dd($request->all());
-        return $this->payWithpaypal($request->all());
+    public function ABC(Request $request)
+    {
+        //   dd($request['pkgId']);
+       return  $check_payment = $this->payWithpaypal($request->all());
+    }
+
+    public function BidPurchased($pkgId)
+    {
+        $userId = Auth()->user()->id;
+        if($check_payment && "http://127.0.0.1:8000/get-status" == 'approved')
+        {
+            $data = [
+                'user_id' => $userId,
+                'pkg_id' => $pkgId,
+                'status' => 1,
+            ];
+    
+            $purchaseSubscription = Subscriber::create($data);
+
+            $find_package = Bid::where('id',$pkgId)->first();
+
+            $purchase_data = [
+                'user_id' => $userId,
+                'purchase_bids' => $find_package->number_of_bids,
+                'purchase_price' => $find_package->price,
+                'status' => 1,
+                'payment_status' => 1,
+            ];
+            $bid_purchase = BidPurchased::create($purchase_data);
+
+            $total_bids = UserBid::where('user_id',$bid_purchase->user_id)->orderBy('id','DESC')->first();
+            $total_bid_sum = 0;
+            if(!empty($total_bids->total_bids))
+            {
+                $total_bid_sum = $total_bids->total_bids;
+            }
+           
+            $bids_Sum = $bid_purchase->purchase_bids + $total_bid_sum;
+
+            $update_user_bid = [
+                'user_id' => $userId,
+                'total_bids' => $bids_Sum,
+                'status' => 1,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ];
+            
+            $total_bids = UserBid::updateOrInsert(['user_id' => $userId], $update_user_bid);
+        }
     }
 
     
