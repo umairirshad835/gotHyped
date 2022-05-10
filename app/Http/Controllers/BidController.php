@@ -210,7 +210,7 @@ class BidController extends Controller
             return Redirect::route('showStatus');
         }
         \Session::put('error', 'Payment failed');
-             return Redirect::route('showStatus');
+             return Redirect::route('failedStatus');
     }
 
     public function ABC(Request $request)

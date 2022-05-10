@@ -36,4 +36,34 @@ class UserWalletController extends Controller
             return response()->json($response);
         }
     }
+
+    public function rechargeWallet(Request $request)
+    {
+        $rechargeblnce = $request->balance;
+        $userId = Auth()->user()->id;
+
+        if($rechargeblnce)
+        {
+            $url = "http://127.0.0.1:8000/recharge-wallet?balance=".$rechargeblnce."&userId=".$userId;
+            
+            $response = [
+                'status' => 1,
+                'message' => 'Recharge wallet with paypal and enter amount',
+                'method' => $request->route()->getActionMethod(),
+                'url' => $url,
+            ];
+            return response()->json($response);
+        }
+        else
+        {
+            $response = [
+                'status' => 0,
+                'message' => 'Please enter amount to Recharge Wallet',
+                'method' => $request->route()->getActionMethod(),
+                'url' => '',
+            ];
+            return response()->json($response);
+        }
+        
+    }
 }

@@ -141,10 +141,19 @@ Route::group(['middleware' => 'auth'], function () {
         return view('payment');
     })->name('showStatus');
 
+    Route::get('/failed-status', function (Request $request) {
+        return view('failed-payment');
+    })->name('failedStatus');
+
     // Route::post('pay-with-paypal',[BidController::class,'payWithPayPal'])->name('paypal');
     Route::get('get-status',[BidController::class,'getPaymentStatus'])->name('getstatus');
     Route::get('paypal-payment',[BidController::class,'ABC']);
     Route::post('paypal-payment',[BidController::class,'ABC'])->name('payment');
+
+    // recharge-wallet
+    Route::get('recharge-status',[UserController::class,'rechargePaymentStatus'])->name('rechargeStatus');
+    Route::get('recharge-wallet',[UserController::class,'wallet']);
+    Route::post('recharge-wallet',[UserController::class,'wallet'])->name('recharge-wallet');
 
 
     // Route::get('/auction-index',[ManageAuctionController::class,'index'])->name('auctionIndex');

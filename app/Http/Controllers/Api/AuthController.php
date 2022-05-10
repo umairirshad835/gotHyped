@@ -52,6 +52,8 @@ class AuthController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => bcrypt($request->password),
+            'device_token' => $request->device_token,
+            'device_id' => $request->device_id,
             'roles' => 'customer',
             'status' => 1,
         ];

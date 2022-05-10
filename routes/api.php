@@ -70,8 +70,9 @@ Route::group(['middleware' => 'auth:api'], function () {
     // check Bid of login User
     Route::get('/check-user-bids',[UserBidController::class,'userBid'])->name('checkBids');
 
-    // Check balance of login user
+    // wallet
     Route::get('/check-user-wallet',[UserWalletController::class,'userWallet']);
+    Route::post('/recharge-wallet',[UserWalletController::class,'rechargeWallet']);
 
     //get all Product
     Route::get('/auctions', [ProductController::class, 'auctions']);

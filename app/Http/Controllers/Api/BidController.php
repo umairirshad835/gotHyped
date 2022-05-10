@@ -16,65 +16,30 @@ class BidController extends Controller
     public function bidPurchased(Request $request)
     {
         $userId = Auth()->user()->id;
-        $purchase_bids = $request->bids;
-        $purchase_price = $request->price;
+        $bidId = $request->bid_id;
         
-        $data = [
-            'user_id' => $userId,
-            'purchase_bids' => $purchase_bids,
-            'purchase_price' => $purchase_price,
-            'status' => 1,
-        ];
+        $find_bid = Bid::where('id',$bidId)->first();
+        $url = "http://127.0.0.1:8000//paypal-payment?price=".$find_bid->price."&bids=".$find_bid->number_of_bids."&pkgId=".$bidId;
 
-        $purchasebid = BidPurchased::create($data);
-      
-        if(!empty($purchasebid))
+        if($find_bid)
         {
-            $bid_purchase = BidPurchased::where('user_id',$purchasebid->user_id)->orderBy('id','DESC')->first();
-            
-            $total_bids = UserBid::where('user_id',$purchasebid->user_id)->orderBy('id','DESC')->first();
-            
-            $total_bid_sum = 0;
-
-            if(!empty($total_bids->total_bids))
-            {
-                $total_bid_sum = $total_bids->total_bids;
-            }
-           
-            $bids_Sum = $bid_purchase->purchase_bids + $total_bid_sum;
-
-            $update_data = [
-                'user_id' => $userId,
-                'total_bids' => $bids_Sum,
+            $response = [
                 'status' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
+                'message' => 'Complete Your payment first',
+                'method' => $request->route()->getActionMethod(),
+                'url' => $url,
             ];
-
-            $total_bids = UserBid::updateOrInsert(['user_id' => $userId], $update_data); 
-
-            if($total_bids)
-            {
-                $response = [
-                    'status' => 1,
-                    'message' => 'Bids Purchase Successfully and your Bid Wallet is Updated',
-                    'method' => $request->route()->getActionMethod(),
-                    'data' => $data,
-                ];
-    
-                return response()->json($response);
-            }
-            else
-            {
-                $response = [
-                    'status' => 0,
-                    'message' => 'Bids Not Purchased',
-                    'method' => $request->route()->getActionMethod(),
-                    'data' => (object) array(),
-                ];
-    
-                return response()->json($response);
-            }
+            return response()->json($response);
+        }
+        else
+        {
+            $response = [
+                'status' => 0,
+                'message' => 'please select Bids to purchase',
+                'method' => $request->route()->getActionMethod(),
+                'url' => '',
+            ];
+            return response()->json($response);
         }
     }
 
@@ -114,11 +79,11 @@ class BidController extends Controller
     {
         $subscriptionList = Bid::where('type','subscription')->where('status',1)->get();
 
-        if(!empty($subscriptionList))
+        if(!$subscriptionList->isEmpty())
         {
             $response = [
                 'status' => 1,
-                'message' => 'Data fetched Successfully.',
+                'message' => 'You have Following Subscription Packages.',
                 'data' => $subscriptionList,
             ];
             return response()->json($response);
@@ -127,7 +92,7 @@ class BidController extends Controller
         {
             $response = [
                 'status' => 0,
-                'message' => 'Data Not Found.',
+                'message' => 'Subscription Packages Not Found.',
                 'data' => (object) array(),
             ];
             return response()->json($response);
@@ -138,7 +103,7 @@ class BidController extends Controller
     {
         $nonSubscriptionList = Bid::where('type','non-Subscription')->where('status',1)->get();
 
-        if(!empty($nonSubscriptionList))
+        if(!$nonSubscriptionList->isEmpty())
         {
             $response = [
                 'status' => 1,

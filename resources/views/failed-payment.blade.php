@@ -1,0 +1,1 @@
+<h3>Payment Failed you have not sufficient balance in your PayPal account</h3>
