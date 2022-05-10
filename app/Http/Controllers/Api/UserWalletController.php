@@ -21,7 +21,7 @@ class UserWalletController extends Controller
         {
             $response = [
                 'status' => 1,
-                'message' => 'Availle Balance of '.$userwallet->user->name. ' is $'.$userwallet->wallet_amount,
+                'message' => 'Available Balance of '.$userwallet->user->name. ' is $'.$userwallet->wallet_amount,
                 'data' =>  $userwallet,
             ];
             return response()->json($response);
