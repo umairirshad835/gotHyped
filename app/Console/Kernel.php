@@ -26,6 +26,7 @@ class Kernel extends ConsoleKernel
     {
 
           $schedule->command('bot:cron')->everyMinute();
+          $schedule->command('subscription:cron')->everyMinute();
 
     }
 

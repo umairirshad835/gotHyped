@@ -20,6 +20,7 @@ use App\Models\User;
 use App\Models\VerifyCode;
 use App\Models\UserSetting;
 use App\Models\UserProfileSetting;
+use App\Models\UserWallet;
 
 class AuthController extends Controller
 {
@@ -85,7 +86,17 @@ class AuthController extends Controller
                     'items_liked' => 0,
                     'items_won' => 0,
                 ];
-                $saveProfileSetting = $profileSetting->create($profileData);                
+                $saveProfileSetting = $profileSetting->create($profileData);
+
+                $wallet = new UserWallet;
+
+                $wallet_data = [
+                    'user_id' => $user->id,
+                    'wallet_amount' => 0,
+                    'status' => 1,
+                ];
+
+                $wallet->create($wallet_data);
 
                 $respoonse = [
                     'status' => 1,
@@ -495,6 +506,41 @@ class AuthController extends Controller
         {
             $newCustomer = User::create($data);
             // dd($newCustomer);
+            if($newCustomer)
+            {
+                $userSetting = new UserSetting;
+
+                $settingData = [
+                    'user_id' => $newCustomer->id,
+                    'push_notification' => 0,
+                    'alerts' => 0,
+                    'user_profile_visibility' => 0,
+                ];
+
+                $setting = $userSetting->create($settingData);
+
+                $profileSetting = new UserProfileSetting;
+
+                $profileData = [
+                    'user_setting_id' => $setting->id,
+                    'name' => 0,
+                    'auction_played' => 0,
+                    'auction_won' => 0,
+                    'items_liked' => 0,
+                    'items_won' => 0,
+                ];
+                $saveProfileSetting = $profileSetting->create($profileData);
+
+                $wallet = new UserWallet;
+
+                $wallet_data = [
+                    'user_id' => $newCustomer->id,
+                    'wallet_amount' => 0,
+                    'status' => 1,
+                ];
+
+                $wallet->create($wallet_data);
+            }
             $customer = [
                 'first_name' => $newCustomer->first_name,
                 'email' => $newCustomer->email,
