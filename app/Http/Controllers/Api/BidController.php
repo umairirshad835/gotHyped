@@ -30,8 +30,7 @@ class BidController extends Controller
             if($find_bid->price <= $user_wallet->wallet_amount)
             {
                 $update_user_wallet = $user_wallet->wallet_amount - $find_bid->price;
-                // dd($update_user_wallet);
-                $user_wallet->update(['wallet_amount',$update_user_wallet]);
+                $wallet_amount = $user_wallet->update(['wallet_amount'=> $update_user_wallet]);
 
                 $purchase_data = [
                     'user_id' => $userId,
@@ -80,30 +79,31 @@ class BidController extends Controller
             }
             
         }
-        
-        
-        // $url = "http://127.0.0.1:8000/paypal-payment?price=".$find_bid->price."&bids=".$find_bid->number_of_bids."&pkgId=".$bidId;
+        elseif($option == 2)
+        {
+            $url = "http://127.0.0.1:8000/paypal-payment?price=".$find_bid->price."&bids=".$find_bid->number_of_bids."&pkgId=".$bidId."&userId=".$userId;
 
-        // if($find_bid)
-        // {
-        //     $response = [
-        //         'status' => 1,
-        //         'message' => 'Complete Your payment first',
-        //         'method' => $request->route()->getActionMethod(),
-        //         'url' => $url,
-        //     ];
-        //     return response()->json($response);
-        // }
-        // else
-        // {
-        //     $response = [
-        //         'status' => 0,
-        //         'message' => 'please select Bids to purchase',
-        //         'method' => $request->route()->getActionMethod(),
-        //         'url' => '',
-        //     ];
-        //     return response()->json($response);
-        // }
+            if($find_bid)
+            {
+                $response = [
+                    'status' => 1,
+                    'message' => 'Complete Your payment with PayPal',
+                    'method' => $request->route()->getActionMethod(),
+                    'url' => $url,
+                ];
+                return response()->json($response);
+            }
+            else
+            {
+                $response = [
+                    'status' => 0,
+                    'message' => 'please select Bids to purchase',
+                    'method' => $request->route()->getActionMethod(),
+                    'url' => '',
+                ];
+                return response()->json($response);
+            }
+        }
     }
 
     public function subscriptionPurchased(Request $request)

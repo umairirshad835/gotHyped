@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Bid;
 use App\Models\BidPurchased;
+use App\Models\UserBid;
+use Carbon\Carbon;
 
 use Illuminate\Support\Facades\Input;
 use PayPal\Api\Amount;
@@ -121,16 +123,16 @@ class BidController extends Controller
     }
 
     public function payWithpaypal($request)
-    {
+    {   
         // dd($request['price']);
         $payer = new Payer();
         $payer->setPaymentMethod('paypal');
 
         $item_1 = new Item();
-        $item_1->setName('bids purchase') /** item name **/
+        $item_1->setName($request['pkgId']) /** Bid Id is set from here in request **/
                     ->setCurrency('USD')
                     ->setQuantity(1)
-                    ->setPrice($request['price']); /** unit price **/
+                    ->setPrice($request['price']); /** Price of bid is set **/
 
         $item_list = new ItemList();
                 $item_list->setItems(array($item_1));
@@ -142,7 +144,7 @@ class BidController extends Controller
         $transaction = new Transaction();
                 $transaction->setAmount($amount)
                     ->setItemList($item_list)
-                    ->setDescription('Your transaction description');
+                    ->setDescription($request['userId']);  /** current Login UserId is set in description **/
 
         $redirect_urls = new RedirectUrls();
                 $redirect_urls->setReturnUrl(URL::route('getstatus')) /** Specify return URL **/
@@ -187,8 +189,6 @@ class BidController extends Controller
 
     public function getPaymentStatus(Request $request)
     {
-        $userId = Auth()->user()->id;
-        // dd($request->all());
         /** Get the payment ID before session clear **/
         $payment_id = $request->paymentId;
 
@@ -203,9 +203,12 @@ class BidController extends Controller
                 $execution->setPayerId($request->PayerID);
         /**Execute the payment **/
                 $result = $payment->execute($execution, $this->_api_context);
-                \Session::put('pkgId', 'Payment success');
+                \Session::put('price', 'Payment success');
         if ($result->getState() == 'approved') {
-            $this->BidPurchased();
+                // dd($result);
+                // dd($result->transactions[0]->item_list->items[0]->name);
+
+            $this->BidPurchased($result->transactions[0]->description,$result->transactions[0]->amount->total,$result->transactions[0]->item_list->items[0]->name);
         \Session::put('success', 'Payment success');
             return Redirect::route('showStatus');
         }
@@ -214,54 +217,51 @@ class BidController extends Controller
     }
 
     public function ABC(Request $request)
-    {
+    {   
+        // dd($request->all());
         //   dd($request['pkgId']);
        return  $check_payment = $this->payWithpaypal($request->all());
     }
 
-    public function BidPurchased($pkgId)
+    public function BidPurchased($userId,$price,$pkgId)
     {
-        $userId = Auth()->user()->id;
-        if($check_payment && "http://127.0.0.1:8000/get-status" == 'approved')
+        // $data = [
+        //     'user_id' => $userId,
+        //     'pkg_id' => $pkgId,
+        //     'status' => 1,
+        // ];
+
+        // $purchaseSubscription = Subscriber::create($data);
+
+        $find_package = Bid::where('id',$pkgId)->first();
+
+        $purchase_data = [
+            'user_id' => $userId,
+            'purchase_bids' => $find_package->number_of_bids,
+            'purchase_price' => $find_package->price,
+            'status' => 1,
+            'payment_status' => 1,
+        ];
+        $bid_purchase = BidPurchased::create($purchase_data);
+
+        $total_bids = UserBid::where('user_id',$bid_purchase->user_id)->orderBy('id','DESC')->first();
+        $total_bid_sum = 0;
+        if(!empty($total_bids->total_bids))
         {
-            $data = [
-                'user_id' => $userId,
-                'pkg_id' => $pkgId,
-                'status' => 1,
-            ];
-    
-            $purchaseSubscription = Subscriber::create($data);
-
-            $find_package = Bid::where('id',$pkgId)->first();
-
-            $purchase_data = [
-                'user_id' => $userId,
-                'purchase_bids' => $find_package->number_of_bids,
-                'purchase_price' => $find_package->price,
-                'status' => 1,
-                'payment_status' => 1,
-            ];
-            $bid_purchase = BidPurchased::create($purchase_data);
-
-            $total_bids = UserBid::where('user_id',$bid_purchase->user_id)->orderBy('id','DESC')->first();
-            $total_bid_sum = 0;
-            if(!empty($total_bids->total_bids))
-            {
-                $total_bid_sum = $total_bids->total_bids;
-            }
-           
-            $bids_Sum = $bid_purchase->purchase_bids + $total_bid_sum;
-
-            $update_user_bid = [
-                'user_id' => $userId,
-                'total_bids' => $bids_Sum,
-                'status' => 1,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ];
-            
-            $total_bids = UserBid::updateOrInsert(['user_id' => $userId], $update_user_bid);
+            $total_bid_sum = $total_bids->total_bids;
         }
+        
+        $bids_Sum = $bid_purchase->purchase_bids + $total_bid_sum;
+
+        $update_user_bid = [
+            'user_id' => $userId,
+            'total_bids' => $bids_Sum,
+            'status' => 1,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ];
+        
+        return $total_bids = UserBid::updateOrInsert(['user_id' => $userId], $update_user_bid);
     }
 
     

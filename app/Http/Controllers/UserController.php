@@ -100,7 +100,7 @@ class UserController extends Controller
         $item_1->setName('Recharge Wallet') /** item name **/
                     ->setCurrency('USD')
                     ->setQuantity(1)
-                    ->setPrice($request['balance']); /** recharge price **/
+                    ->setPrice($request['balance']); /** recharge price is set here in request **/
                     // dd($item_1);
 
         $item_list = new ItemList();
@@ -113,7 +113,7 @@ class UserController extends Controller
         $transaction = new Transaction();
                 $transaction->setAmount($amount)
                     ->setItemList($item_list)
-                    ->setDescription($request['userId']);
+                    ->setDescription($request['userId']); /** current Login UserId is set in description **/
 
         $redirect_urls = new RedirectUrls();
                 $redirect_urls->setReturnUrl(URL::route('rechargeStatus')) /** Specify return URL **/
