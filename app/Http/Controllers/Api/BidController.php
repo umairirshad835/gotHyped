@@ -37,6 +37,7 @@ class BidController extends Controller
                     'purchase_bids' => $find_bid->number_of_bids,
                     'purchase_price' => $find_bid->price,
                     'status' => 1,
+                    'payment_status' => 1,
                 ];
 
                 $bid_purchase = BidPurchased::create($purchase_data);
@@ -71,7 +72,7 @@ class BidController extends Controller
             {
                 $response = [
                     'status' => 0,
-                    'message' => 'Purchased Failed! You have not sufficient Balance in your Wallet',
+                    'message' => 'Purchased Failed! You have not sufficient Balance in your Wallet, PayWith PayPal or Recharge Your Wallet',
                     'method' => $request->route()->getActionMethod(),
                     'data' => (object) array(),
                 ];
@@ -110,32 +111,99 @@ class BidController extends Controller
     {
         $userId = Auth()->user()->id;
         $pkgId = $request->pkg_id;
+        $option = $request->option;
+
+        $data = [
+            'user_id' => $userId,
+            'pkg_id' => $pkgId,
+            'status' => 1,
+        ];
+        $purchaseSubscription = Subscriber::create($data);
+
+        $find_pkg = Bid::where('id',$pkgId)->first();
         
-        $find_package = Bid::where('id',$pkgId)->first();
-
-        $url = "http://127.0.0.1:8000/paypal-payment?price=".$find_package->price."&bids=".$find_package->number_of_bids."&pkgId=".$pkgId;
-
-        if($find_package)
+        if($option == 1)
         {
-            $response = [
-                'status' => 1,
-                'message' => 'Complete Your payment first',
-                'method' => $request->route()->getActionMethod(),
-                'url' => $url,
-            ];
-            return response()->json($response);
-        }
-        else
-        {
-            $response = [
-                'status' => 0,
-                'message' => 'Package not found',
-                'method' => $request->route()->getActionMethod(),
-                'url' => '',
-            ];
-            return response()->json($response);
-        }
+            $user_wallet = UserWallet::where('user_id',$userId)->first();
 
+            if($find_pkg->price <= $user_wallet->wallet_amount)
+            {
+                $update_user_wallet = $user_wallet->wallet_amount - $find_pkg->price;
+                $wallet_amount = $user_wallet->update(['wallet_amount'=> $update_user_wallet]);
+
+                $purchase_data = [
+                    'user_id' => $userId,
+                    'purchase_bids' => $find_pkg->number_of_bids,
+                    'purchase_price' => $find_pkg->price,
+                    'status' => 1,
+                    'payment_status' => 1,
+                ];
+
+                $bid_purchase = BidPurchased::create($purchase_data);
+
+                $total_bids = UserBid::where('user_id',$bid_purchase->user_id)->orderBy('id','DESC')->first();
+                $total_bid_sum = 0;
+                if(!empty($total_bids->total_bids))
+                {
+                    $total_bid_sum = $total_bids->total_bids;
+                }
+           
+                $bids_Sum = $bid_purchase->purchase_bids + $total_bid_sum;
+
+                $update_user_bid = [
+                    'user_id' => $userId,
+                    'total_bids' => $bids_Sum,
+                    'status' => 1,
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
+                ];
+            
+                $total_bids = UserBid::updateOrInsert(['user_id' => $userId], $update_user_bid); 
+                $response = [
+                    'status' => 1,
+                    'message' => 'Bid Purchased Successfully',
+                    'method' => $request->route()->getActionMethod(),
+                    'data' =>  $purchase_data,
+                ];
+                return response()->json($response);
+            }
+            else
+            {
+                $response = [
+                    'status' => 0,
+                    'message' => 'Purchased Failed! You have not sufficient Balance in your Wallet, PayWith PayPal or Recharge Your Wallet',
+                    'method' => $request->route()->getActionMethod(),
+                    'data' => (object) array(),
+                ];
+                return response()->json($response);
+            }
+            
+        }
+        if($option == 2)
+        {
+            $url = "http://127.0.0.1:8000/paypal-payment?price=".$find_pkg->price."&bids=".$find_pkg->number_of_bids."&pkgId=".$pkgId."&userId=".$userId;
+
+            if($find_pkg)
+            {
+                $response = [
+                    'status' => 1,
+                    'message' => 'Complete Your payment With PayPal',
+                    'method' => $request->route()->getActionMethod(),
+                    'url' => $url,
+                ];
+                return response()->json($response);
+            }
+            else
+            {
+                $response = [
+                    'status' => 0,
+                    'message' => 'Package not found',
+                    'method' => $request->route()->getActionMethod(),
+                    'url' => '',
+                ];
+                return response()->json($response);
+            }
+        }
     }
     
     public function subscription()

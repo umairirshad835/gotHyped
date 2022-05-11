@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Bid;
 use App\Models\BidPurchased;
 use App\Models\UserBid;
+use App\Models\Subscriber;
 use Carbon\Carbon;
 
 use Illuminate\Support\Facades\Input;
@@ -225,43 +226,78 @@ class BidController extends Controller
 
     public function BidPurchased($userId,$price,$pkgId)
     {
-        // $data = [
-        //     'user_id' => $userId,
-        //     'pkg_id' => $pkgId,
-        //     'status' => 1,
-        // ];
-
-        // $purchaseSubscription = Subscriber::create($data);
-
         $find_package = Bid::where('id',$pkgId)->first();
+        // dd($find_package);
 
-        $purchase_data = [
-            'user_id' => $userId,
-            'purchase_bids' => $find_package->number_of_bids,
-            'purchase_price' => $find_package->price,
-            'status' => 1,
-            'payment_status' => 1,
-        ];
-        $bid_purchase = BidPurchased::create($purchase_data);
-
-        $total_bids = UserBid::where('user_id',$bid_purchase->user_id)->orderBy('id','DESC')->first();
-        $total_bid_sum = 0;
-        if(!empty($total_bids->total_bids))
+        if($find_package->type == 'non-Subscription')
         {
-            $total_bid_sum = $total_bids->total_bids;
+            $purchase_data = [
+                'user_id' => $userId,
+                'purchase_bids' => $find_package->number_of_bids,
+                'purchase_price' => $find_package->price,
+                'status' => 1,
+                'payment_status' => 1,
+            ];
+            $bid_purchase = BidPurchased::create($purchase_data);
+    
+            $total_bids = UserBid::where('user_id',$bid_purchase->user_id)->orderBy('id','DESC')->first();
+            $total_bid_sum = 0;
+            if(!empty($total_bids->total_bids))
+            {
+                $total_bid_sum = $total_bids->total_bids;
+            }
+            
+            $bids_Sum = $bid_purchase->purchase_bids + $total_bid_sum;
+    
+            $update_user_bid = [
+                'user_id' => $userId,
+                'total_bids' => $bids_Sum,
+                'status' => 1,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ];
+            
+            return $total_bids = UserBid::updateOrInsert(['user_id' => $userId], $update_user_bid);
         }
-        
-        $bids_Sum = $bid_purchase->purchase_bids + $total_bid_sum;
+        elseif($find_package->type == 'subscription')
+        {
+            $data = [
+                'user_id' => $userId,
+                'pkg_id' => $pkgId,
+                'status' => 1,
+            ];
 
-        $update_user_bid = [
-            'user_id' => $userId,
-            'total_bids' => $bids_Sum,
-            'status' => 1,
-            'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now(),
-        ];
-        
-        return $total_bids = UserBid::updateOrInsert(['user_id' => $userId], $update_user_bid);
+            $purchaseSubscription = Subscriber::create($data);
+
+            $purchase_data = [
+                'user_id' => $userId,
+                'purchase_bids' => $find_package->number_of_bids,
+                'purchase_price' => $find_package->price,
+                'status' => 1,
+                'payment_status' => 1,
+            ];
+            // dd($purchase_data);
+            $bid_purchase = BidPurchased::create($purchase_data);
+    
+            $total_bids = UserBid::where('user_id',$bid_purchase->user_id)->orderBy('id','DESC')->first();
+            $total_bid_sum = 0;
+            if(!empty($total_bids->total_bids))
+            {
+                $total_bid_sum = $total_bids->total_bids;
+            }
+            
+            $bids_Sum = $bid_purchase->purchase_bids + $total_bid_sum;
+    
+            $update_user_bid = [
+                'user_id' => $userId,
+                'total_bids' => $bids_Sum,
+                'status' => 1,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ];
+            
+            return $total_bids = UserBid::updateOrInsert(['user_id' => $userId], $update_user_bid);
+        }
     }
 
     
