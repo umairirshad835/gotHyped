@@ -15,8 +15,8 @@ use App\Models\BidPurchased;
 
 class DashboardController extends Controller
 {
-    public function dashboard(){
-
+    public function dashboard()
+    {
         // count total Users of Application
         $totalUsers = User::where('roles','customer')->count();
         // count total Bots of Application

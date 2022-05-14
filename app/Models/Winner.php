@@ -17,6 +17,7 @@ class Winner extends Model
         'auction_close_price',
         'market_value_status',
         'get_product_status',
+        'email_status',
     ];
 
     public function product(){

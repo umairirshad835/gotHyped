@@ -30,7 +30,6 @@
                                         <tr>
                                             <th style="color:white;">#</th>
                                             <th style="color:white;">Name</th>
-                                            <th style="color:white;">Code</th>
                                             <th style="color:white;">Status</th>
                                             <th style="color:white;">Actions</th>
                                         </tr>
@@ -40,7 +39,6 @@
                                         <tr>
                                             <td>{{++$key}}</td>
                                             <td>{{$size->name}}</td>
-                                            <td>{{$size->code}}</td>
                                             <td>
                                                 <form action="{{route('changeSizeStatus',$size->id)}}" method="POST">
                                                     @csrf

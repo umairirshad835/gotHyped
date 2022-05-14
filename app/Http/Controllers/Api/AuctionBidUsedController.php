@@ -252,6 +252,7 @@ class AuctionBidUsedController extends Controller
         }
 
         $auctionId = $request->auction_id;
+        
 
         $winner_user = AuctionStart::with('users')->where('auction_id',$auctionId)->first();
 
@@ -273,12 +274,15 @@ class AuctionBidUsedController extends Controller
 
             if(!empty($actual_winner))
             {
+                $userId = Auth::user()->id;
+                $announce_winner = Winner::with('winuser')->where('user_id',$userId)->where('product_id',$auctionId)->first();
+                $announce_losers = Loser::with('auctionLoser')->where('user_id',$userId)->where('auction_id',$auctionId)->get();
                 $response = [
                     'status' => 2,
                     'message' => 'Winner Announced',
                     'method' => $request->route()->getActionMethod(),
-                    'actual_winner' => $actual_winner,
-                    'actual_losers' => $actual_losers,
+                    'actual_winner' => $announce_winner,
+                    'actual_losers' => $announce_losers,
                 ];
                 return response()->json($response);
             }

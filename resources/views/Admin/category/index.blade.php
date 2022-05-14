@@ -30,7 +30,6 @@
                                         <tr>
                                             <th style="color:white;">#</th>
                                             <th style="color:white;">Name</th>
-                                            <th style="color:white;">Code</th>
                                             <th style="color:white;">Status</th>
                                             <th style="color:white;">Actions</th>
                                         </tr>
@@ -40,7 +39,6 @@
                                         <tr>
                                             <td>{{++$key}}</td>
                                             <td>{{$category->name}}</td>
-                                            <td>{{$category->code}}</td>
                                             <td>
                                                 <form action="{{route('changeCategoryStatus',$category->id)}}" method="POST">
                                                     @csrf

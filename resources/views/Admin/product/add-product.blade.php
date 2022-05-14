@@ -52,7 +52,7 @@
                     <div class="col-xl-4 col-md-4">
                         <div class="form-group">
                             <label class="form-label">Actual Price</label>
-                            <input id="actual_price" class="form-control @error('actual_price') is-invalid @enderror" value="{{ old('actual_price') }}" name="actual_price" type="number" placeholder="Enter Actual Price" min="1">
+                            <input id="actual_price" class="form-control @error('actual_price') is-invalid @enderror" value="{{ old('actual_price') }}" name="actual_price" type="number" placeholder="Enter Actual Price" min="1" step="any">
                                 @error('actual_price')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -64,7 +64,7 @@
                     <div class="col-xl-4 col-md-4">
                         <div class="form-group">
                             <label class="form-label">Market Price</label>
-                            <input id="market_price" class="form-control @error('market_price') is-invalid @enderror" value="{{ old('market_price') }}" name="market_price" type="number" placeholder="Enter Market Price" min="1">
+                            <input id="market_price" class="form-control @error('market_price') is-invalid @enderror" value="{{ old('market_price') }}" name="market_price" type="number" placeholder="Enter Market Price" min="1" step="any">
                                 @error('market_price')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -76,7 +76,7 @@
                     <div class="col-xl-4 col-md-4">
                         <div class="form-group">
                             <label class="form-label">Auction Price</label>
-                            <input id="auction_price" class="form-control @error('auction_price') is-invalid @enderror" value="{{ old('auction_price') }}" name="auction_price" type="number" placeholder="Enter Auction Price" min="1">
+                            <input id="auction_price" class="form-control @error('auction_price') is-invalid @enderror" value="{{ old('auction_price') }}" name="auction_price" type="number" placeholder="Enter Auction Price" min="1" step="any">
                                 @error('auction_price')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>

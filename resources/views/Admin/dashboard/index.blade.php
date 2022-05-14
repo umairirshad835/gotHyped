@@ -293,13 +293,16 @@
                                 <table class="table border text-nowrap text-md-nowrap mb-0">
                                     <thead style="background-color:#5ba9dc;">
                                         <tr>
-                                            <th style="color:white;">#</th>
+                                        <th style="color:white;">#</th>
                                             <th style="color:white;">Name</th>
                                             <th style="color:white;">Image</th>
-                                            <th style="color:white;">Category</th>
-                                            <th style="color:white;">Auction Price</th>
+                                            <th style="color:white;">Actual Price</th>
+                                            <th style="color:white;">Market Price</th>
+                                            <th style="color:white;">Winning Price</th>
+                                            <th style="color:white;">Total Bids</th>
                                             <th style="color:white;">Winner</th>
                                             <th style="color:white;">Winner Role</th>
+                                            <th style="color:white;">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -314,17 +317,21 @@
                                                     <span>No Image Attached</span>
                                                 @endif
                                             </td>
-                                            <td>{{$completed->category->first()->name}}</td>
-                                            <td>$ {{$completed->auction_price}}</td>
-                                            <td>{{ $completed->winner->first()->user->first()->name}}</td>
-                                            <td> 
+                                            <td>${{$completed->actual_price}}</td>
+                                            <td>${{$completed->market_price}}</td>
+                                            <td>$ {{$completed->winner->first()->auction_close_price}}</td>
+                                            <td>{{$completed->winner->first()->total_bids}}</td>
+                                            <td>{{ $completed->winner->first()->user->first()->username}}</td>
+                                            <td>
                                                 @if($completed->winner->first()->user->first()->roles == 'customer')
                                                     <span class="text-success">{{ $completed->winner->first()->user->first()->roles}}</span>
                                                 @else
                                                     <span class="text-danger">{{ $completed->winner->first()->user->first()->roles}}</span>
                                                 @endif
                                             </td>
-                                            
+                                            <td>
+                                                <a href="{{route('previewCompletedProduct', $completed->id)}}" target="_blank"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                                            </td>
                                         </tr>
                                         @endforeach
                                     </tbody>

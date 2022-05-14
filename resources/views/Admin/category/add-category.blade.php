@@ -31,20 +31,8 @@
                                 @enderror
                         </div>
                     </div>
+                    
                     <div class="col-xl-6 col-md-6">
-                        <div class="form-group">
-                            <label class="form-label">Code</label>
-                            <input id="code" class="form-control @error('code') is-invalid @enderror" value="{{ old('code') }}" name="code" type="text" placeholder="Enter category code">
-                                @error('code')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xl-12 col-md-12">
                         <div class="form-group">
                             <label class="form-label">Status</label>
                             <select class="form-control form-select @error('status') is-invalid @enderror" data-placeholder="Choose one" name="status">
@@ -67,7 +55,7 @@
                         </div>
                     @endforeach    
                 </div>
-                        <button type="submit" class="btn py-1 px-4 mb-1" style="background-color:#5ba9dc;color:white;">Add category</button>
+                        <button type="submit" class="btn py-1 px-4 mb-1" style="background-color:#5ba9dc;color:white;">Add Category</button>
             </div>
         </form>
     </div>

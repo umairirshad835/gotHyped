@@ -10,8 +10,8 @@ class ProductSizeController extends Controller
 {
     public function sizeList(){
 
-        $sizeList = ProductSize::paginate(25);
-        // dd($sizeList);
+        $sizeList = ProductSize::where('status',1)->paginate(25);
+        //  dd($sizeList);
             return view('Admin.size.index',compact('sizeList'));
     }
 
@@ -25,13 +25,11 @@ class ProductSizeController extends Controller
         
         $request->validate([
             'name' => 'required|max:50',
-            'code' => 'required|max:10',
             'status' => 'required',
         ]);
 
         $data = [
             'name' => $request->name,
-            'code' => strtoupper($request->code),
             'status' => $request->status,
         ];
 
@@ -53,19 +51,16 @@ class ProductSizeController extends Controller
 
         $request->validate([
             'name' => 'max:50',
-            'code' => 'required|max:10',
         ]);
 
         $size_id = $request->size_id;
         $size_name = $request->name;
-        $size_code = strtoupper($request->code);
         $size_status = $request->status;
 
         $find_size = ProductSize::find($size_id);
 
         $data = [
             'name' => $size_name,
-            'code' => $size_code,
             'status' => $size_status,
         ];
 

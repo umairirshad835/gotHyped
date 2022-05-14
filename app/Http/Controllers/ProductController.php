@@ -13,6 +13,9 @@ use App\Models\Winner;
 use App\Models\User;
 use App\Models\AuctionBidUsed;
 use App\Models\AuctionStart;
+use App\Models\Loser;
+use App\Models\UserShippingAddress;
+use PDF;
 
 
 class ProductController extends Controller
@@ -360,6 +363,39 @@ class ProductController extends Controller
         //   dd($winner);
         
         return view('Admin.product.view-complete-product',compact('product','completeview','winner'));
+    }
+
+
+    public function pdf()
+    {
+        $get_completed_auctions = Winner::where('email_status',0)->get();
+
+        foreach($get_completed_auctions as $completed)
+        {
+            $product = Product::with('sizes')->where('id',$completed->product_id)->first();
+            $sizes_id = AssignProductSize::where('product_id',$product->id)->where('status',1)->pluck('size_id');
+            $sizenames = ProductSize::whereIn('id',$sizes_id)->get();
+            $customer = User::where('id',$completed->user_id)->first();
+            $auction = AuctionStart::where('auction_id',$completed->product_id)->first();
+            $winner_bids = AuctionBidUsed::where('user_id',$customer->id)->where('auction_id',$product->id)->first();
+            $losers = Loser::with('auctionLoser')->where('auction_id',$completed->product_id)->get();
+            $shipping_Address = UserShippingAddress::with('address')->where('auction_id',$product->id)->first();
+
+            $real_bids = AuctionBidUsed::whereHas('users', function($query){
+                $query->where('roles','=', 'customer');
+            })
+            ->where('auction_id',$product->id)->sum('bid_used');
+
+            $dummy_bids = AuctionBidUsed::whereHas('users', function($query){
+                $query->where('roles','=', 'bot');
+            })
+            ->where('auction_id',$product->id)->sum('bid_used');
+        }
+            return view('emails/auction-completed', compact('product','completed','sizenames','customer','auction','losers','winner_bids','shipping_Address','real_bids','dummy_bids'));
+
+        // $pdf = PDF::loadView('emails/auction-completed', compact('product'));
+        //         // dd($pdf);
+        //     return $pdf;
     }
 
 }

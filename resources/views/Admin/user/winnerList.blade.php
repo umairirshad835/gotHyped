@@ -41,15 +41,15 @@
                                         @foreach($winnerList as $key => $winner)
                                         <tr>
                                             <td>{{++$key}}</td>
-                                            <td>{{$winner->user->first()->name}}</td>
+                                            <td>{{$winner->user->first()->name ?? ''}}</td>
                                             <td>
                                             @if($winner->user->first()->roles == 'customer')
-                                                    <span class="text-success">{{ $winner->user->first()->roles}}</span>
+                                                    <span class="text-success">{{ $winner->user->first()->roles ?? ''}}</span>
                                                 @else
-                                                    <span class="text-danger">{{ $winner->user->first()->roles}}</span>
+                                                    <span class="text-danger">{{ $winner->user->first()->roles ?? ''}}</span>
                                                 @endif
                                             </td>
-                                            <td>{{$winner->product->first()->name}}</td>
+                                            <td>{{$winner->product->first()->name ?? ''}}</td>
                                             <td>
                                                 @if(!empty($winner->product->first()->image1))
                                                     <img src="{{asset($winner->product->first()->image1)}}" alt="" style="width:100px;height:80px">
@@ -57,9 +57,9 @@
                                                     <span>No Image Attached</span>
                                                 @endif
                                             </td>
-                                            <td>{{$winner->WinnerBid->first()->bid_used}}</td>
-                                            <td>{{$winner->total_bids}}</td>
-                                            <td>$ {{$winner->auction_close_price}}</td>
+                                            <td>{{$winner->WinnerBid->first()->bid_used ?? ''}}</td>
+                                            <td>{{$winner->total_bids ?? ''}}</td>
+                                            <td>$ {{$winner->auction_close_price ?? ''}}</td>
                                         </tr>
                                         @endforeach
                                     </tbody>

@@ -33,9 +33,13 @@
                     </div>
                     <div class="col-xl-6 col-md-6">
                         <div class="form-group">
-                            <label class="form-label">Bid Code</label>
-                            <input id="code" class="form-control @error('code') is-invalid @enderror" value="{{ old('code') }}" name="code" type="text" placeholder="Enter bid code">
-                                @error('code')
+                            <label class="form-label">Bid Type</label>
+                                <select class="form-control form-select @error('type') is-invalid @enderror" data-placeholder="Choose one" name="type">
+                                    <option label="Choose one"></option>
+                                    <option value="subscription">Subscription</option>
+                                    <option value="non-Subscription">Non-Subscription</option>
+                                </select>
+                                @error('type')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -58,7 +62,7 @@
                     <div class="col-xl-6 col-md-6">
                         <div class="form-group">
                             <label class="form-label">Bid price</label>
-                            <input id="price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price') }}" name="price" type="number" placeholder="Enter bid price" min="1">
+                            <input id="price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price') }}" name="price" type="number" placeholder="Enter bid price" min="1" step="any">
                                 @error('price')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -67,25 +71,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-xl-6 col-md-6">
-                        <div class="form-group">
-                            <label class="form-label">Bid Type</label>
-                            <select class="form-control form-select @error('type') is-invalid @enderror" data-placeholder="Choose one" name="type">
-                                    <option label="Choose one"></option>
-                                    <option value="subscription">Subscription</option>
-                                    <option value="non-Subscription">Non-Subscription</option>
-                                </select>
-                                @error('type')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                        </div>
-                    </div>
-                </div>
 
-                        <button type="submit" class="btn py-1 px-4 mb-1" style="background-color:#5ba9dc;color:white;">Add Bid</button>
+                <button type="submit" class="btn py-1 px-4 mb-1" style="background-color:#5ba9dc;color:white;">Add Bid</button>
             </div>
         </form>
     </div>

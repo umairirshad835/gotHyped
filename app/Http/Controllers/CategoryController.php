@@ -25,13 +25,11 @@ class CategoryController extends Controller
         
         $request->validate([
             'name' => 'required|max:50',
-            'code' => 'required|max:10',
             'status' => 'required',
         ]);
 
         $data = [
             'name' => $request->name,
-            'code' => strtoupper($request->code),
             'status' => $request->status,
         ];
 
@@ -77,14 +75,12 @@ class CategoryController extends Controller
 
         $category_id = $request->category_id;
         $category_name = $request->name;
-        $category_code = strtoupper($request->code);
         $category_status = $request->status;
 
         $find_category = Category::find($category_id);
 
         $data = [
             'name' => $category_name,
-            'code' => $category_code,
             'status' => $category_status,
         ];
 

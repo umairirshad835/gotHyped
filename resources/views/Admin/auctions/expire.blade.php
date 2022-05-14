@@ -30,9 +30,9 @@
                                             <th style="color:white;">Image</th>
                                             <th style="color:white;">Actual Price</th>
                                             <th style="color:white;">Market Price</th>
-                                            <th style="color:white;">Auction Price</th>
-                                            <th style="color:white;">Close Price</th>
+                                            <th style="color:white;">Winning Price</th>
                                             <th style="color:white;">Total Bids</th>
+                                            <th style="color:white;">Winner</th>
                                             <th style="color:white;">Winner Role</th>
                                             <th style="color:white;">Action</th>
                                         </tr>
@@ -51,9 +51,9 @@
                                             </td>
                                             <td>${{$complete->actual_price}}</td>
                                             <td>${{$complete->market_price}}</td>
-                                            <td>${{$complete->auction_price}}</td>
                                             <td>$ {{$complete->winner->first()->auction_close_price}}</td>
                                             <td>{{$complete->winner->first()->total_bids}}</td>
+                                            <td>{{ $complete->winner->first()->user->first()->username}}</td>
                                             <td>
                                                 @if($complete->winner->first()->user->first()->roles == 'customer')
                                                     <span class="text-success">{{ $complete->winner->first()->user->first()->roles}}</span>

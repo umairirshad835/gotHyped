@@ -53,7 +53,6 @@ class BidController extends Controller
 
         $request->validate([
             'name' => 'required|max:50',
-            'code' => 'required|max:10',
             'bids' => 'required',
             'price' => 'required',
             'type' => 'required',
@@ -61,7 +60,6 @@ class BidController extends Controller
 
         $data = [
             'name' => $request->name,
-            'code' => strtoupper($request->code),
             'number_of_bids' => $request->bids,
             'price' => $request->price,
             'type' => $request->type,
@@ -84,7 +82,6 @@ class BidController extends Controller
 
         $request->validate([
             'name' => 'required|max:50',
-            'code' => 'required|max:10',
             'bids' => 'required',
             'price' => 'required',
             'type' => 'required',
@@ -92,7 +89,6 @@ class BidController extends Controller
 
         $bid_id = $request->bid_edit;
         $bid_name = $request->name;
-        $bid_code = strtoupper($request->code);
         $number_of_bids = $request->bids;
         $bid_price = $request->price;
         $bid_type = $request->type;

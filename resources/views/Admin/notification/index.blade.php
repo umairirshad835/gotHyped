@@ -48,8 +48,6 @@
 
                                                     @if($notification->status == 1)
                                                         <span class="badge bg-success me-1 mb-1 mt-1 p-2">Sent</span>
-                                                    @else
-                                                        <a href="{{route('editNotification', $notification->id)}}" class="btn btn-default btn-sm">Draft</a>
                                                     @endif
                                                 </form>
                                             </td>

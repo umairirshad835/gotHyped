@@ -4,17 +4,16 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\support\Facades\Auth;
-use Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
-
 use App\Mail\SendResetPasswordCode;
-use Illuminate\Http\Request;
-use Carbon\Carbon;
 use Mail;
+use Carbon\Carbon;
+use Hash;
 
 use App\Models\User;
 use App\Models\VerifyCode;
@@ -190,8 +189,8 @@ class AuthController extends Controller
         }
     }
 
-    public function forgotPassword(Request $request){
-
+    public function forgotPassword(Request $request)
+    {
         $validator = Validator::make($request->all(),[
             'email' => 'required',
         ]);
@@ -218,7 +217,6 @@ class AuthController extends Controller
                 'email' => $customer->email,
                 'code' =>  'GH-'.$code,
             ];
-            // dd($data);
 
             $check_verify = VerifyCode::where('email', $customer->email)->first();
             if(!empty($check_verify))
