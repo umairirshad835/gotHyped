@@ -252,7 +252,6 @@ class AuctionBidUsedController extends Controller
         }
 
         $auctionId = $request->auction_id;
-        $userId = Auth::user()->id;
         
         $winner_user = AuctionStart::with('users')->where('auction_id',$auctionId)->first();
 
@@ -263,7 +262,7 @@ class AuctionBidUsedController extends Controller
                 $query->select('id','name')->where('user_id','!=', $winner_user['last_user_id']);
             })
             ->where('auction_id',$auctionId)->get();
-            
+    
             if(!$all_bidding_users->isEmpty())
             {
                 foreach($all_bidding_users as $key => $username)
@@ -275,12 +274,10 @@ class AuctionBidUsedController extends Controller
             {
                 $all_bidding_users = 0;
             }
-            
-            
-            $actual_winner = Winner::with(['winuser','WinnerBidwon'])->where('user_id',$userId)->where('product_id',$auctionId)->first();
-            // dd($actual_winner);
-            $actual_losers = Loser::with('auctionLoser')->where('user_id',$userId)->where('auction_id',$auctionId)->first();
-            // dd($actual_losers);
+
+            $actual_winner = Winner::with(['winuser','WinnerBidwon'])->where('product_id',$auctionId)->first();
+            $actual_losers = Loser::with('auctionLoser')->where('auction_id',$auctionId)->get();
+
             if(!empty($actual_winner))
             {
                 $response = [
@@ -288,32 +285,19 @@ class AuctionBidUsedController extends Controller
                     'message' => 'Winner Announced',
                     'method' => $request->route()->getActionMethod(),
                     'actual_winner' => $actual_winner,
+                    'actual_losers' => $actual_losers,
                 ];
                 return response()->json($response);
             }
-            elseif(!empty($actual_losers))
-            {
-                // dd('123rhryh');
-                $response = [
-                    'status' => 3,
-                    'message' => 'Loser Announced',
-                    'method' => $request->route()->getActionMethod(),
-                    'actual_loser' => $actual_losers,
-                ];
+
+            $response = [
+                'status' => 1,
+                'message' => 'Auction All users',
+                'method' => $request->route()->getActionMethod(),
+                'winner' => $winner_user,
+                'other_user' => $all_bidding_users,
+            ];
                 return response()->json($response);
-            }
-            else
-            {
-                // dd('123');
-                $response = [
-                    'status' => 1,
-                    'message' => 'Auction All users',
-                    'method' => $request->route()->getActionMethod(),
-                    'winner' => $winner_user,
-                    'other_user' => $all_bidding_users,
-                ];
-                    return response()->json($response);
-            }
         }
         else
         {
