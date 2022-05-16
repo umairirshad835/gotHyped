@@ -49,7 +49,11 @@ class Winner extends Model
     }
 
     public function WinnerBidwon(){
-        return $this->hasOne(AuctionBidUsed::class,'user_id','user_id');
+        return $this->hasOne(AuctionBidUsed::class,'auction_id','product_id');
+    }
+
+    public function shippingAddressNew(){
+        return $this->hasone(UserShippingAddress::class,'auction_id','product_id');
     }
 
 

@@ -35,9 +35,9 @@
                                 <a class="nav-item nav-link" href="#BidHistory" role="tab" aria-selected="false" data-toggle="tab">
                                 Bids History
                                 </a>
-                                <!-- <a class="nav-item nav-link" href="#AuctionWon" role="tab" aria-selected="false" data-toggle="tab">
+                                <a class="nav-item nav-link" href="#AuctionWon" role="tab" aria-selected="false" data-toggle="tab">
                                 Auction Won
-                                </a> -->
+                                </a>
                                 <a class="nav-item nav-link" href="#AuctionLost" role="tab" aria-selected="false" data-toggle="tab">
                                 Auction Lost
                                 </a>
@@ -126,7 +126,53 @@
                                 </div>
 
                                 <!-- Auction Won Tab content -->
-                               
+                                <div class="tab-pane" id="AuctionWon">
+                                    <table id="userTable" class="table border text-nowrap text-md-nowrap mb-0">
+                                        <thead style="background-color:#5ba9dc;">
+                                            <tr>
+                                                <th style="color:white;">Auction Name</th>
+                                                <th style="color:white;">Image</th>
+                                                <th style="color:white;">Check Out Method</th>
+                                                <th style="color:white;">Delivery Address</th>
+                                                <th style="color:white;">Market Price</th>
+                                                <th style="color:white;">Size</th>
+                                                <th style="color:white;">Bid's Won</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($winner_auctions as $win)
+                                                <tr>
+                                                    <td>{{$win->winproduct->name}}</td>
+                                                    <td>
+                                                        @if(!empty($win->winproduct->image1))
+                                                            <img src="{{asset($win->winproduct->image1)}}" alt="" style="width:100px;height:80px">
+                                                        @else
+                                                            <span>No Image Attached</span>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        @if($win->market_value_status == 1)
+                                                            <span>Market Price</span>
+                                                        @else
+                                                            <span>Delivery Address</span>
+                                                        @endif
+                                                    </td>
+                                                    <td>{{$win->shippingAddressNew->address->address}}</td>
+                                                    <td>
+                                                        @if($win->market_value_status == 1)
+                                                            <span>{{$win->winproduct->market_price}}</span>
+                                                        @else
+                                                            <span>N/A</span>
+                                                        @endif
+                                                    </td>
+                                                    <td>{{$win->shippingAddressNew->size->name}}</td>
+                                                    <td>{{App\Models\AuctionBidUsed::where('user_id', $win->user_id)->where('auction_id', $win->product_id)->first()->bid_used}}</td>
+                                                </tr>
+                                                
+                                            @endforeach
+                                        </tbody>    
+                                    </table>
+                                </div>
 
                                 <!-- Auction Lost Tab content -->
                                 <div class="tab-pane" id="AuctionLost">
@@ -135,7 +181,7 @@
                                             <tr>
                                                 <th style="color:white;">Auction Name</th>
                                                 <th style="color:white;">Image</th>
-                                                <th style="color:white;">Bids Lost</th>
+                                                <th style="color:white;">Bid's Lost</th>
                                             </tr>
                                         </thead>
                                         <tbody>

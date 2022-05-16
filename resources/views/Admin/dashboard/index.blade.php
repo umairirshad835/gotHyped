@@ -319,9 +319,9 @@
                                             </td>
                                             <td>${{$completed->actual_price}}</td>
                                             <td>${{$completed->market_price}}</td>
-                                            <td>$ {{$completed->winner->first()->auction_close_price}}</td>
-                                            <td>{{$completed->winner->first()->total_bids}}</td>
-                                            <td>{{ $completed->winner->first()->user->first()->username}}</td>
+                                            <td>$ {{$completed->winner->first()->auction_close_price ?? ''}}</td>
+                                            <td>{{$completed->winner->first()->total_bids ?? ''}}</td>
+                                            <td>{{ $completed->winner->first()->user->first()->username ?? ''}}</td>
                                             <td>
                                                 @if($completed->winner->first()->user->first()->roles == 'customer')
                                                     <span class="text-success">{{ $completed->winner->first()->user->first()->roles}}</span>

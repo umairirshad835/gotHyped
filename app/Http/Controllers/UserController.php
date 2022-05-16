@@ -63,22 +63,11 @@ class UserController extends Controller
 
         $bid_history = AuctionBidUsed::with('product')->where('user_id',$id)->get();
 
-        $winner_auctions = Winner::with(['winproduct','shippingAddress.size'])->where('user_id',$id)->get();
-
-        // $winner_auctions = DB::table('winners')
-        //     ->leftJoin('products', 'winners.product_id', '=', 'products.id')
-        //     ->leftJoin('user_shipping_addresses', 'winners.user_id', '=', 'user_shipping_addresses.user_id')
-        //     ->leftJoin('auction_bid_useds', 'winners.user_id', '=', 'auction_bid_useds.user_id')
-        //     ->select('products.name','products.image1','auction_bid_useds.bid_used','winners.id')
-        //     ->where('winners.user_id',$id)
-        //     ->get();
-        //  dd($winner_auctions);
-
-        $auction_won = AuctionBidUsed::where('user_id',$id)->whereIn('auction_id',$winner_auctions)->get();
-
+        $winner_auctions = Winner::with(['winproduct','shippingAddressNew'])->where('user_id',$id)->get();
+        
         $auction_lost = Loser::with('ProductLost')->where('user_id',$id)->get();
 
-        return view('Admin.user.user_detail',compact('user','user_bids','purchased_bids','bid_history','auction_won','auction_lost','winner_auctions'));
+        return view('Admin.user.user_detail',compact('user','user_bids','purchased_bids','bid_history','auction_lost','winner_auctions'));
     }
 
     public function winnerList()

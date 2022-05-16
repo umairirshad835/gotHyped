@@ -55,7 +55,7 @@ class DashboardController extends Controller
         $auction_pending = Product::with('category')->where('auction_status',0)->orderBy('auction_time','ASC')->paginate(25);
 
         $auction_completed = Product::with(['category','winner.user'])->where('auction_status',2)->paginate(25);
-            //   dd($auction_completed );
+            //    dd($auction_completed );
         
         return view('Admin.dashboard.index',compact('totalUsers','pending','inProgress','completed','bidUsed','bids_Sale','itemsDelivered','marketvalue','auction_pending','auction_completed'));
     }
