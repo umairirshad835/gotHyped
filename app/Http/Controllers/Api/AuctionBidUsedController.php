@@ -397,6 +397,8 @@ class AuctionBidUsedController extends Controller
             ];
 
             $update_wallet = UserWallet::where('user_id',$userId)->update($data);
+            $updateCheckout = Product::where('id',$auctionId)->first();
+            $updateCheckout->update(['checkout_status' => 1]);
 
             $response = [
                 'status' => 2,
@@ -514,7 +516,10 @@ class AuctionBidUsedController extends Controller
 
         $shipping_data = UserShippingAddress::create($data);
 
-        if($shipping_data){
+        if($shipping_data)
+        {
+            $updateCheckout = Product::where('id',$auctionId)->first();
+            $updateCheckout->update(['checkout_status' => 1]);
             $response = [
                 'status' => 1,
                 'message' => 'Congratulations You will receive GotHyped Product at your shipping address',
@@ -535,5 +540,4 @@ class AuctionBidUsedController extends Controller
         }
         
     }
-
 }

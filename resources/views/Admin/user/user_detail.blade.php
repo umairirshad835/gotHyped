@@ -3,7 +3,7 @@
 @section('content')
 
 @section('custom-css')
-   
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.0/css/jquery.dataTables.css">
 @endsection('custom-css')
 
 
@@ -72,7 +72,7 @@
 
                                 <!-- BidPurchase Tab content -->
                                 <div class="tab-pane" id="BidPurchase">
-                                    <table id="userTable" class="table border text-nowrap text-md-nowrap mb-0">
+                                    <table class="table border text-nowrap text-md-nowrap mb-0" id="purchase-bid-datatable">
                                         <thead style="background-color:#5ba9dc;">
                                             <tr>
                                                 <th style="color:white;">Bid Purchase</th>
@@ -96,7 +96,7 @@
 
                                 <!-- Bid History Tab content -->
                                 <div class="tab-pane" id="BidHistory">
-                                    <table id="userTable" class="table border text-nowrap text-md-nowrap mb-0">
+                                    <table id="bid-history-datatable" class="table border text-nowrap text-md-nowrap mb-0">
                                         <thead style="background-color:#5ba9dc;">
                                             <tr>
                                                 <th style="color:white;">Auction Name</th>
@@ -127,7 +127,7 @@
 
                                 <!-- Auction Won Tab content -->
                                 <div class="tab-pane" id="AuctionWon">
-                                    <table id="userTable" class="table border text-nowrap text-md-nowrap mb-0">
+                                    <table id="auction-won-datatable" class="table border text-nowrap text-md-nowrap mb-0">
                                         <thead style="background-color:#5ba9dc;">
                                             <tr>
                                                 <th style="color:white;">Auction Name</th>
@@ -176,7 +176,7 @@
 
                                 <!-- Auction Lost Tab content -->
                                 <div class="tab-pane" id="AuctionLost">
-                                    <table id="userTable" class="table border text-nowrap text-md-nowrap mb-0">
+                                    <table id="auction-lost-datatable" class="table border text-nowrap text-md-nowrap mb-0">
                                         <thead style="background-color:#5ba9dc;">
                                             <tr>
                                                 <th style="color:white;">Auction Name</th>
@@ -221,5 +221,27 @@
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.js"></script>
 
+<script>
+$(document).ready( function () {
+        $('#purchase-bid-datatable').DataTable();
+
+    if (location.hash) {
+        $("a[href='" + location.hash + "']").tab("show");
+    }
+    $(document.body).on("click", "a[data-toggle='tab']", function(event) {
+        location.hash = this.getAttribute("href");
+    });
+
+    $(window).on("popstate", function() {
+        var anchor = location.hash || $("a[data-toggle='tab']").first().attr("href");
+        $("a[href='" + anchor + "']").tab("show");
+    });
+
+});
+
+   
+
+</script>
 @endsection
