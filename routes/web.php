@@ -155,6 +155,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('recharge-wallet',[UserController::class,'wallet']);
     Route::post('recharge-wallet',[UserController::class,'wallet'])->name('recharge-wallet');
 
-    Route::get('pdf',[ProductController::class,'pdf']);
+    // Route::get('pdf',[ProductController::class,'pdf']);
     // Route::get('/auction-index',[ManageAuctionController::class,'index'])->name('auctionIndex');
     // Route::post('/manage-auction',[ManageAuctionController::class,'manageAuction'])->name('manageAuction');

@@ -8,8 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 class HomeController extends Controller
-{
-    
+{ 
     public function index()
     {
         return view('login');
@@ -24,7 +23,14 @@ class HomeController extends Controller
            
            $user = User::where(['email'=>$request->email])->first();
            
-        if (!empty($user)) {
+        if(empty($user->email))
+        {
+            return back()->withErrors([
+                'email' => ['The e-mail You enterd does not match our record.']
+            ]);
+        }
+        if (!empty($user)) 
+        {
             if (!Hash::check($request->password, $user->password)) {
                 return back()->withErrors([
                     'password' => ['The provided password does not match our records.']

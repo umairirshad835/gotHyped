@@ -373,13 +373,13 @@ class AuctionBidUsedController extends Controller
 
         $auctionId = $request->auction_id;
 
-        $find_auction = Product::where('id', $auctionId)->where('auction_status', 1)->first();
+        $find_auction = Product::where('id', $auctionId)->where('auction_status', 2)->first();
         $find_wallet  = UserWallet::where('user_id',$userId)->first();
         
         if(empty($find_wallet))
         {
             $response = [
-                'status' => 0,
+                'status' => 1,
                 'message' => 'Customer Wallet Not Found',
                 'method' => $request->route()->getActionMethod(),
                 'data' => (object) array(),
@@ -399,7 +399,7 @@ class AuctionBidUsedController extends Controller
             $update_wallet = UserWallet::where('user_id',$userId)->update($data);
 
             $response = [
-                'status' => 1,
+                'status' => 2,
                 'message' => 'Customer Wallet Updated Successfully',
                 'method' => $request->route()->getActionMethod(),
                 'data' => $update_wallet,
@@ -410,8 +410,8 @@ class AuctionBidUsedController extends Controller
         else
         {
             $response = [
-                'status' => 0,
-                'message' => 'Customer Wallet Not Found',
+                'status' => 3,
+                'message' => 'Amount Not Added to Customer Wallet',
                 'method' => $request->route()->getActionMethod(),
                 'data' => (object) array(),
             ];
