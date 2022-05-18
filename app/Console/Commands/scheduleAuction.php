@@ -44,7 +44,7 @@ class scheduleAuction extends Command
     {
         $current_time = Carbon::now();
         
-        $products = Product::where('auction_time', $current_time)->where('auction_status', 0)->get();
+        $products = Product::where('auction_time','>=', $current_time)->where('auction_status', 0)->get();
         // Log::info($products);
         foreach($products as $product)
         {
