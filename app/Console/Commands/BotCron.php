@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\support\Facades\Auth;
+use Faker\Factory;
 use Carbon\Carbon;
 use DB;
 
@@ -65,28 +66,28 @@ class BotCron extends Command
             $currentTime = Carbon::now();
             $auction_products = Product::where('auction_status',1)->get();
             
-            // Log::info('Getting All products ready for auction from Product table '. $auction_products);
+            //  Log::info('Getting All products ready for auction from Product table '. $auction_products);
 
             if(!$auction_products->isEmpty())
             {
+                // Log::info($auction_products);
                 foreach($auction_products as $data)
                 {
                     $auctionId = $data->id;
-
+                    //  Log::info($auctionId);
                     $check_auction = AuctionStart::where('auction_id',$auctionId)->first();
-
-                        if(!empty($check_auction))
-                        {   
-                            $auctionId = $check_auction->auction_id;
-                            $auction_price_now = $check_auction->current_price;
-                            
-                        }
-                        else
-                        {
-                            $auctionId = $data->id;
-                /** Why */             //$check_auction = $data->id;
-                            $auction_price_now = $assume_price;
-                        }
+                    // Log::info($check_auction);
+                    if(!empty($check_auction))
+                    {   
+                        $auctionId = $check_auction->auction_id;
+                        $auction_price_now = $check_auction->current_price;
+                        
+                    }
+                    else
+                    {
+                        $auctionId = $data->id;
+                        $auction_price_now = $assume_price;
+                    }
 
                     // calculate time from auction start if not exist then get time from product
                     $updateTime = isset($check_auction->updated_at) ? $check_auction->updated_at : $data->updated_at;
@@ -125,7 +126,6 @@ class BotCron extends Command
                                 {
                                     $returnBids = AuctionBidUsed::where('auction_id',$auctionId)->where('user_id',$check_auction->last_user_id)->first();
                                     $update_auction_status = Product::where('id',$winner->product_id)->update(['auction_status' => 2]);
-                    /** Why */                // $update_product_status = winner::where('product_id',$winner->product_id)->update(['get_product_status' => 1]);
                                 }
 
                                 // get all losers data except winner
@@ -151,7 +151,6 @@ class BotCron extends Command
                         }
                         else
                         {
-                        
                             if($timeDiff >= 5 && !empty($check_auction))
                             {   
                                 $botCount = DB::table('auction_bid_useds')
@@ -173,14 +172,14 @@ class BotCron extends Command
                                             'message' => 'Auction Not Found',
                                             'data' => (object) array(),
                                         ];
-                                            return response()->json($responses);
+                                           
                                     }
                                         $responses = [
                                             'status' => 1,
                                             'message' => 'Bid Successfully',
                                             'data' => $data,
                                         ];
-                                            return response()->json($responses);
+                                            
                                 }
                                 else
                                 {
@@ -209,14 +208,14 @@ class BotCron extends Command
                                                 'message' => 'Auction Not Found',
                                                 'data' => (object) array(),
                                             ];
-                                                return response()->json($responses);
+                
                                         }
                                             $responses = [
                                                 'status' => 1,
                                                 'message' => 'Bid Successfully',
                                                 'data' => $data,
                                             ];
-                                                return response()->json($responses);
+                                                
                                     }
                                     else
                                     {
@@ -236,14 +235,14 @@ class BotCron extends Command
                                                 'message' => 'Auction Not Found',
                                                 'data' => (object) array(),
                                             ];
-                                                return response()->json($responses);
+                                            
                                         }
                                             $responses = [
                                                 'status' => 1,
                                                 'message' => 'Bid Successfully',
                                                 'data' => $data,
                                             ];
-                                                return response()->json($responses);
+                                            
                                     }
                                 }
                             }
@@ -269,14 +268,14 @@ class BotCron extends Command
                                             'message' => 'Auction Not Found',
                                             'data' => (object) array(),
                                         ];
-                                            return response()->json($responses);
+                                            
                                     }
                                         $responses = [
                                             'status' => 1,
                                             'message' => 'Bid Successfully',
                                             'data' => $data,
                                         ];
-                                            return response()->json($responses);
+                                            
                                 }
                                 else
                                 {
@@ -296,14 +295,14 @@ class BotCron extends Command
                                             'message' => 'Auction Not Found',
                                             'data' => (object) array(),
                                         ];
-                                            return response()->json($responses);
+                                        
                                     }
                                         $responses = [
                                             'status' => 1,
                                             'message' => 'Bid Successfully',
                                             'data' => $data,
                                         ];
-                                            return response()->json($responses);
+                                        
                                 }
                             }
                         }
@@ -331,14 +330,14 @@ class BotCron extends Command
                                         'message' => 'Auction Not Found',
                                         'data' => (object) array(),
                                     ];
-                                        return response()->json($responses);
+                                    
                                 }
                                     $responses = [
                                         'status' => 1,
                                         'message' => 'Bid Successfully',
                                         'data' => $data,
                                     ];
-                                        return response()->json($responses);
+                                
                             }
                             else
                             {
@@ -367,14 +366,14 @@ class BotCron extends Command
                                             'message' => 'Auction Not Found',
                                             'data' => (object) array(),
                                         ];
-                                            return response()->json($responses);
+                                        
                                     }
                                         $responses = [
                                             'status' => 1,
                                             'message' => 'Bid Successfully',
                                             'data' => $data,
                                         ];
-                                            return response()->json($responses);
+                                        
                                 }
                                 else
                                 {
@@ -394,14 +393,14 @@ class BotCron extends Command
                                             'message' => 'Auction Not Found',
                                             'data' => (object) array(),
                                         ];
-                                            return response()->json($responses);
+                                        
                                     }
                                         $responses = [
                                             'status' => 1,
                                             'message' => 'Bid Successfully',
                                             'data' => $data,
                                         ];
-                                            return response()->json($responses);
+                                            
                                 }
                             }
                         }
@@ -427,14 +426,14 @@ class BotCron extends Command
                                         'message' => 'Auction Not Found',
                                         'data' => (object) array(),
                                     ];
-                                        return response()->json($responses);
+                                    
                                 }
                                     $responses = [
                                         'status' => 1,
                                         'message' => 'Bid Successfully',
                                         'data' => $data,
                                     ];
-                                        return response()->json($responses);
+                                    
                             }
                             else
                             {
@@ -454,14 +453,14 @@ class BotCron extends Command
                                         'message' => 'Auction Not Found',
                                         'data' => (object) array(),
                                     ];
-                                        return response()->json($responses);
+                                    
                                 }
                                     $responses = [
                                         'status' => 1,
                                         'message' => 'Bid Successfully',
                                         'data' => $data,
                                     ];
-                                        return response()->json($responses);
+                                    
                             }
                         }
                     }
@@ -491,20 +490,21 @@ class BotCron extends Command
 
     public function botUser()
     {
-        $botUser = new User();
+        // create Unique Bot User with Factory
+        $botUser = \App\Models\User::factory()->create();
 
-        $botUser->name = $this->BotName();
-        $botUser->username = $this->BotUserName();
-        $botUser->email = $botUser->username."@gothyped.com";
-        $botUser->phone = '03007798998';
-        $botUser->password =  bcrypt(12345);
-        $botUser->roles  = 'bot';
-        $botUser->status  = 1;
-
-        $botUser->save();
+        // $botUser = new User();
+        // $botUser->name = $this->BotName();
+        // $botUser->username = $this->BotUserName();
+        // $botUser->email = $botUser->username."@gothyped.com";
+        // $botUser->phone = '03007798998';
+        // $botUser->password =  bcrypt(12345);
+        // $botUser->roles  = 'bot';
+        // $botUser->status  = 1;
+        // $botUser->save();
 
             // dd($botUser);
-            return $botUser;
+             return $botUser;
     }
 
     public function auctionUser($auctionId,$userId)

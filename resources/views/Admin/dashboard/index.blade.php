@@ -143,13 +143,13 @@
                                 <div class="col-4">
                                     <div class="card-img-absolute  circle-icon bg-success align-items-center text-center box-success-shadow bradius">
                                         <img src="../assets/images/svgs/circle.svg" alt="img" class="card-img-absolute">
-                                        <i class="lnr lnr-gift fs-30 text-white mt-4"></i>
+                                        <i class="lnr lnr-checkmark-circle fs-30 text-white mt-4"></i>
                                     </div>
                                 </div>
                                 <div class="col-8">
                                     <div class="card-body p-3">
                                         <h2 class="mb-2 fw-normal mt-2">{{$bids_Sale}}</h2>
-                                        <h5 class="fw-normal mb-0">Bid Sale</h5>
+                                        <h5 class="fw-normal mb-0">Bids Sold</h5>
                                     </div>
                                 </div>
                             </div>
@@ -161,7 +161,7 @@
                                 <div class="col-4">
                                     <div class="card-img-absolute  circle-icon bg-success align-items-center text-center box-success-shadow bradius">
                                         <img src="../assets/images/svgs/circle.svg" alt="img" class="card-img-absolute">
-                                        <i class="fa fa-money fs-30 text-white mt-4"></i>
+                                        <i class="fa fa-solid fa-truck fs-30 text-white mt-4"></i>
                                     </div>
                                 </div>
                                 <div class="col-8">

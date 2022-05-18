@@ -25,7 +25,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
 
-          $schedule->command('bot:cron')->everyMinute();
+          $schedule->command('auction:schedule')->everyThirtyMinutes();
           $schedule->command('subscription:cron')->monthly();
           $schedule->command('auctioncompleted:cron')->everyMinute();
 

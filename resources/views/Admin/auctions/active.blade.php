@@ -50,13 +50,13 @@
                                                     <span>No Image Attached</span>
                                                 @endif
                                             </td>
-                                            <td>{{$active->category->name}}</td>
-                                            <td>${{$active->actual_price}}</td>
-                                            <td>${{$active->market_price}}</td>
-                                            <td>${{$active->auction_price}}</td>
-                                            <td>$ {{$active->AuctionStart->first()->current_price}}</td>
-                                            <td>{{$active->AuctionStart->first()->current_bid_used}}</td>
-                                            <td>{{$active->AuctionStart->first()->users->name}}</td>
+                                            <td>{{$active->category->name ?? ''}}</td>
+                                            <td>${{$active->actual_price ?? ''}}</td>
+                                            <td>${{$active->market_price ?? ''}}</td>
+                                            <td>${{$active->auction_price ?? ''}}</td>
+                                            <td>$ {{$active->AuctionStart->first()->current_price ?? ''}}</td>
+                                            <td>{{$active->AuctionStart->first()->current_bid_used ?? ''}}</td>
+                                            <td>{{$active->AuctionStart->first()->users->name ?? ''}}</td>
                                             <td>
                                                 <a href="{{route('previewActiveProduct', $active->id)}}" target="_blank"><i class="fa fa-eye" aria-hidden="true"></i></a>
                                             </td>

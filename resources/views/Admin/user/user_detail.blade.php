@@ -55,7 +55,7 @@
                                     <table id="userTable" class="table border text-nowrap text-md-nowrap mb-0">
                                         <thead style="background-color:#5ba9dc;">
                                             <tr>
-                                                <th style="color:white;">Current Bid</th>
+                                                <th style="color:white;">Available Bids</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -83,8 +83,8 @@
                                         <tbody>
                                             @forelse($purchased_bids as $purchase)
                                                 <tr role="row">
-                                                    <td>{{$purchase->purchase_bids}}</td>
-                                                    <td>${{$purchase->purchase_price}}</td>
+                                                    <td>{{$purchase->purchase_bids ?? ''}}</td>
+                                                    <td>${{$purchase->purchase_price ?? ''}}</td>
                                                     <td>{{date('d-M-Y H:i A', strtotime($purchase->created_at))}}</td>
                                                 </tr>
                                             @empty
@@ -108,14 +108,14 @@
                                             <tr role="row">
                                                 @forelse($bid_history as $history)
                                                     <tr role="row">
-                                                        <td>{{$history->product->first()->name}}</td>
+                                                        <td>{{$history->product->first()->name  ?? ''}}</td>
                                                         <td> @if(!empty($history->product->first()->image1))
-                                                                <img src="{{asset($history->product->first()->image1)}}" alt="" style="width:100px;height:80px">
+                                                                <img src="{{asset($history->product->first()->image1  ?? '')}}" alt="" style="width:100px;height:80px">
                                                             @else
                                                                 <span>No Image Attached</span>
                                                             @endif
                                                         </td>
-                                                        <td>{{$history->bid_used}}</td>
+                                                        <td>{{$history->bid_used  ?? ''}}</td>
                                                     </tr>
                                                 @empty
                                                     <tr><td class="text-center">No Data Found</td></tr>
@@ -145,7 +145,7 @@
                                                     <td>{{$win->winproduct->name}}</td>
                                                     <td>
                                                         @if(!empty($win->winproduct->image1))
-                                                            <img src="{{asset($win->winproduct->image1)}}" alt="" style="width:100px;height:80px">
+                                                            <img src="{{asset($win->winproduct->image1  ?? '')}}" alt="" style="width:100px;height:80px">
                                                         @else
                                                             <span>No Image Attached</span>
                                                         @endif
@@ -157,16 +157,16 @@
                                                             <span>Delivery Address</span>
                                                         @endif
                                                     </td>
-                                                    <td>{{$win->shippingAddressNew->address->address}}</td>
+                                                    <td>{{$win->shippingAddressNew->address->address  ?? ''}}</td>
                                                     <td>
                                                         @if($win->market_value_status == 1)
-                                                            <span>{{$win->winproduct->market_price}}</span>
+                                                            <span>{{$win->winproduct->market_price  ?? ''}}</span>
                                                         @else
                                                             <span>N/A</span>
                                                         @endif
                                                     </td>
-                                                    <td>{{$win->shippingAddressNew->size->name}}</td>
-                                                    <td>{{App\Models\AuctionBidUsed::where('user_id', $win->user_id)->where('auction_id', $win->product_id)->first()->bid_used}}</td>
+                                                    <td>{{$win->shippingAddressNew->size->name  ?? ''}}</td>
+                                                    <td>{{App\Models\AuctionBidUsed::where('user_id', $win->user_id)->where('auction_id', $win->product_id)->first()->bid_used  ?? ''}}</td>
                                                 </tr>
                                                 
                                             @endforeach
@@ -187,14 +187,14 @@
                                         <tbody>
                                             @foreach($auction_lost as $lost)
                                                 <tr role="row">
-                                                    <td>{{$lost->ProductLost->first()->name}}</td>
-                                                    <td> @if(!empty($lost->ProductLost->first()->image1))
-                                                    <img src="{{asset($lost->ProductLost->first()->image1)}}" alt="" style="width:100px;height:80px">
+                                                    <td>{{$lost->ProductLost->first()->name  ?? ''}}</td>
+                                                    <td> @if(!empty($lost->ProductLost->first()->image1  ?? ''))
+                                                    <img src="{{asset($lost->ProductLost->first()->image1  ?? '')}}" alt="" style="width:100px;height:80px">
                                                     @else
                                                         <span>No Image Attached</span>
                                                     @endif
                                                 </td>
-                                                    <td>{{$lost->lost_bids}}</td>
+                                                    <td>{{$lost->lost_bids  ?? ''}}</td>
                                                 </tr>
                                             @endforeach
                                         </tbody>    

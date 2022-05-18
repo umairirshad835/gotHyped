@@ -52434,6 +52434,7 @@ ul.timeline>li:before {
     line-height: 2rem;
     vertical-align: middle;
     width: auto;
+    height : 80px;
 }
 
 .header-avatar {

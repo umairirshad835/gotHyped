@@ -152,7 +152,7 @@
                 </div>
                 <br>
                 <br>
-                    <button type="submit" class="btn py-1 px-4 mb-1" style="background-color:#5ba9dc;color:white;">Add auction</button>
+                    <button type="submit" class="btn py-1 px-4 mb-1" style="background-color:#5ba9dc;color:white;">Add Auction</button>
             </div>
         </form>
     </div>

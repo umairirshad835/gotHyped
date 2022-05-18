@@ -48,7 +48,7 @@ class scheduleAuction extends Command
         // Log::info($products);
         foreach($products as $product)
         {
-            $product->auction_status = 1;
+            $product->update(['auction_status' => 1]);
             $product->save();
         }
         // Log::info($product);
