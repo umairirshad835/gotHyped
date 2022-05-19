@@ -25,7 +25,7 @@
                     <div class="col-xl-6 col-md-6">
                         <div class="form-group">
                             <label class="form-label">Name</label>
-                            <input id="name" class="form-control @error('name') is-invalid @enderror" value="{{ $category->name }}" name="name" type="text" placeholder="Enter category name">
+                            <input id="name" class="form-control @error('name') is-invalid @enderror limitinput" value="{{ $category->name }}" name="name" type="text" placeholder="Enter category name">
                                 @error('name')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -91,7 +91,7 @@
                     $.each(data.sizes, function (index, el) {
                         var select_size = '';
                         $.each(data.category_size, function (key, val){
-                                if(el['id'] == val['size_id']) {
+                                if(el['id'] == val['size_id'] && val['status'] == 1) {
                                     select_size = 'checked';
                             }
                         });
@@ -99,6 +99,21 @@
                     });
                 }
             });
+        }
+
+        $('input.limitinput').on('keyup', function() {
+            limitText(this, 50)
+        });
+
+        function limitText(field, maxChar){
+            var ref = $(field),
+                val = ref.val();
+            if ( val.length >= maxChar ){
+                ref.val(function() {
+                    console.log(val.substr(0, maxChar))
+                    return val.substr(0, maxChar);       
+                });
+            }
         }
 
     });

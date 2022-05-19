@@ -1,7 +1,18 @@
 @extends('layouts.app')
 
 @section('content')
+  
+    <style>
+        .carousel-img {
+            height:200px;
+            width: 300px;
+        }
 
+        .list-img {
+            height:130px;
+        }
+    </style>
+ 
     <!-- CONTAINER -->
     <div class="main-container container-fluid">
 
@@ -21,18 +32,35 @@
                                 <div class="col-xl-5 col-lg-12 col-md-12">
                                     <div class="row">
                                         <div class="col-xl-12">
-                                            <img src="{{asset($product->image1)}}" alt="" style="width:100%;">
+                                            <div class="product-carousel">
+                                                <div id="Slider" class="carousel slide border" data-bs-ride="false">
+                                                    <div class="carousel-inner">
+                                                        <div class="carousel-item active"><img src="{{asset($product->image1)}}" alt="img" class="img-fluid mx-auto d-block carousel-img">
+                                                            <div class="text-center mt-5 mb-5 btn-list"></div>
+                                                         </div>
+                                                         @if($product->image2)
+                                                        <div class="carousel-item"> <img src="{{asset($product->image2)}}" alt="img" class="img-fluid mx-auto d-block carousel-img">
+                                                            <div class="text-center mb-5 mt-5 btn-list"></div>
+                                                        </div>
+                                                        @endif
+                                                        @if($product->image3)
+                                                        <div class="carousel-item"> <img src="{{asset($product->image3)}}" alt="img" class="img-fluid mx-auto d-block carousel-img">
+                                                            <div class="text-center  mb-5 mt-5 btn-list"></div>
+                                                        </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div class="clearfix carousel-slider">
                                                 <div id="thumbcarousel" class="carousel slide" data-bs-interval="t">
                                                     <div class="carousel-inner">
                                                         <ul class="carousel-item active">
-
+                                                            <li data-bs-target="#Slider" data-bs-slide-to="0" class="thumb active m-2"><img src="{{asset($product->image1)}}" alt="img" class="list-img"></li>
                                                             @if($product->image2)
-                                                            <li data-bs-target="#Slider" data-bs-slide-to="0" class="thumb active m-2"><img src="{{asset($product->image2)}}" alt="" style="width:80%;height:60%;"></li>
+                                                            <li data-bs-target="#Slider" data-bs-slide-to="1" class="thumb m-2"><img src="{{asset($product->image2)}}" alt="img" class="list-img"></li>
                                                             @endif
-
                                                             @if($product->image3)
-                                                            <li data-bs-target="#Slider" data-bs-slide-to="0" class="thumb active m-2"><img src="{{asset($product->image3)}}" alt="" style="width:80%;height:60%;"></li>
+                                                            <li data-bs-target="#Slider" data-bs-slide-to="2" class="thumb m-2"><img src="{{asset($product->image3)}}" alt="img" class="list-img"></li>
                                                             @endif
                                                         </ul>
                                                     </div>

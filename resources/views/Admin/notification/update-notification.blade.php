@@ -24,7 +24,7 @@
                     <div class="col-xl-12 col-md-12">
                         <div class="form-group">
                             <label class="form-label">Title</label>
-                            <input id="title" class="form-control @error('title') is-invalid @enderror" value="{{ $notifincation->title }}" name="title" type="text" placeholder="Enter title">
+                            <input id="title" class="form-control @error('title') is-invalid @enderror limitinput" value="{{ $notifincation->title }}" name="title" type="text" placeholder="Enter title">
                                 @error('title')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -32,22 +32,6 @@
                                 @enderror
                         </div>
                     </div>
-
-                    <!-- <div class="col-xl-6 col-md-6">
-                        <div class="form-group">
-                            <label class="form-label">Status</label>
-                            <select class="form-control form-select @error('status') is-invalid @enderror" data-placeholder="Choose one" name="status">
-                                    <option label="Choose one"></option>
-                                    <option value="1" {{$notifincation->status == 1 ? 'selected' : ''}}>Sent</option>
-                                    <option value="0" {{$notifincation->status == 0 ? 'selected' : ''}}>Draft</option>
-                                </select>
-                                @error('status')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                        </div>
-                    </div> -->
                 </div>
                 <div class="row">
                     <div class="col-xl-12 col-md-12">
@@ -71,3 +55,24 @@
 </div>
 
 @endsection('content')
+
+@section('custom-js')
+
+<script>
+    $('input.limitinput').on('keyup', function() {
+    limitText(this, 50)
+});
+
+function limitText(field, maxChar){
+    var ref = $(field),
+        val = ref.val();
+    if ( val.length >= maxChar ){
+        ref.val(function() {
+            console.log(val.substr(0, maxChar))
+            return val.substr(0, maxChar);       
+        });
+    }
+}
+
+</script>
+@endsection('custom-js')

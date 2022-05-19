@@ -66,19 +66,23 @@ class CategoryController extends Controller
             return response()->json($data);
     }
 
-    public function updateCategory(Request $request){
-
+    public function updateCategory(Request $request)
+    {
         $request->validate([
             'name' => 'max:50',
-            'code' => 'required|max:10',
+            'status' => 'required',
         ]);
+
+        // dd($request->all());
 
         $category_id = $request->category_id;
         $category_name = $request->name;
         $category_status = $request->status;
 
-        $find_category = Category::find($category_id);
+        // dd($category_status);
 
+        $find_category = Category::find($category_id);
+        
         $data = [
             'name' => $category_name,
             'status' => $category_status,
@@ -89,9 +93,13 @@ class CategoryController extends Controller
         {
             $size_id = $request->size_id;
             $cat_id = $request->category_id;
+            // dd($size_id);
+
+            $categorySizes = CategorySize::where('cat_id', $cat_id)->update(['status' => 0]);
+            // dd($categorySizes);
             foreach($size_id as $id)
             {
-                $savesize = CategorySize::updateOrInsert(['cat_id' => $cat_id, 'size_id' => $id],['size_id' => $id,'cat_id' => $cat_id]);
+                $savesize = CategorySize::updateOrInsert(['cat_id' => $cat_id, 'size_id' => $id],['size_id' => $id,'cat_id' => $cat_id, 'status' => 1]);
             }
             // $delete_size = CategorySize::where('cat_id', $cat_id)->whereNotIn('size_id',$size_id)->delete();
         }

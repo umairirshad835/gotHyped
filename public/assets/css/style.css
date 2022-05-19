@@ -52434,7 +52434,6 @@ ul.timeline>li:before {
     line-height: 2rem;
     vertical-align: middle;
     width: auto;
-    height : 80px;
 }
 
 .header-avatar {
@@ -63981,6 +63980,7 @@ body.rtl {
 @media (max-width: 991px) {
     .sidebar-mini .app-header .light-logo1 {
         display: block !important;
+        height: 80px;
     }
 }
 

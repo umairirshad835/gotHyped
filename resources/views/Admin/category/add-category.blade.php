@@ -23,7 +23,7 @@
                     <div class="col-xl-6 col-md-6">
                         <div class="form-group">
                             <label class="form-label">Name</label>
-                            <input id="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" name="name" type="text" placeholder="Enter category name">
+                            <input id="name" class="form-control @error('name') is-invalid @enderror limitinput" value="{{ old('name') }}" name="name" type="text" placeholder="Enter category name">
                                 @error('name')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -64,3 +64,24 @@
 </div>
 
 @endsection('content')
+
+@section('custom-js')
+
+<script>
+    $('input.limitinput').on('keyup', function() {
+    limitText(this, 50)
+});
+
+function limitText(field, maxChar){
+    var ref = $(field),
+        val = ref.val();
+    if ( val.length >= maxChar ){
+        ref.val(function() {
+            console.log(val.substr(0, maxChar))
+            return val.substr(0, maxChar);       
+        });
+    }
+}
+
+</script>
+@endsection('custom-js')

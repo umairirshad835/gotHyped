@@ -24,7 +24,7 @@
                     <div class="col-xl-6 col-md-6">
                         <div class="form-group">
                             <label class="form-label">Name</label>
-                            <input id="name" class="form-control @error('name') is-invalid @enderror" value="{{ $staff->name }}" name="name" type="text">
+                            <input id="name" class="form-control @error('name') is-invalid @enderror limitinput" value="{{ $staff->name }}" name="name" type="text">
                                 @error('name')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -48,7 +48,7 @@
                     <div class="col-xl-6 col-md-6">
                         <div class="form-group">
                             <label class="form-label">Phone</label>
-                            <input id="phone" class="form-control @error('phone') is-invalid @enderror" value="{{ $staff->phone }}"" name="phone" type="text">
+                            <input id="phone" class="form-control @error('phone') is-invalid @enderror limitphone" value="{{ $staff->phone }}"" name="phone" type="text">
                                 @error('phone')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -106,3 +106,38 @@
 </div>
 
 @endsection('content')
+
+@section('custom-js')
+<script>
+    $('input.limitinput').on('keyup', function() {
+        limitText(this, 50)
+    });
+
+    function limitText(field, maxChar){
+        var ref = $(field),
+            val = ref.val();
+        if ( val.length >= maxChar ){
+            ref.val(function() {
+                console.log(val.substr(0, maxChar))
+                return val.substr(0, maxChar);       
+            });
+        }
+    }
+
+    $('input.limitphone').on('keyup', function() {
+        limitPhone(this, 13)
+    });
+
+    function limitPhone(field, maxChar){
+        var ref = $(field),
+            val = ref.val();
+        if ( val.length >= maxChar ){
+            ref.val(function() {
+                console.log(val.substr(0, maxChar))
+                return val.substr(0, maxChar);       
+            });
+        }
+    }
+
+</script>
+@endsection('custom-js')

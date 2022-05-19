@@ -25,7 +25,7 @@
                     <div class="col-xl-6 col-md-6">
                         <div class="form-group">
                             <label class="form-label">Product Name</label>
-                            <input id="name" class="form-control @error('name') is-invalid @enderror" value="{{ $product->name }}" name="name" type="text" placeholder="Enter size name">
+                            <input id="name" class="form-control @error('name') is-invalid @enderror limitinput" value="{{ $product->name }}" name="name" type="text" placeholder="Enter size name">
                                 @error('name')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -124,7 +124,7 @@
                         <div class="form-group">
                             <label class="form-label">Main Image</label>
                             @if(!empty($product->image1))
-                                <img src="{{asset($product->image1)}}" style="width:100px;height:60px">
+                                <img src="{{asset($product->image1)}}" style="width:100px;height:80px">
                             @else
                             <span>NO IMAGE FOUND</span>
                             @endif
@@ -149,7 +149,7 @@
                         <div class="form-group">
                             <label class="form-label">Image Two</label>
                             @if(!empty($product->image2))
-                                <img src="{{asset($product->image2)}}" style="width:100px;height:60px">
+                                <img src="{{asset($product->image2)}}" style="width:100px;height:80px">
                             @else
                             <span>No image attached</span>
                             @endif
@@ -174,7 +174,7 @@
                         <div class="form-group">
                             <label class="form-label">Image Three</label>
                             @if(!empty($product->image3))
-                                <img src="{{asset($product->image3)}}" style="width:100px;height:60px">
+                                <img src="{{asset($product->image3)}}" style="width:100px;height:80px">
                             @else
                             <span>No image attached</span>
                             @endif
@@ -263,6 +263,21 @@ $(document).ready(function() {
 
         editSize(categoryID,productId);
     });
+
+    $('input.limitinput').on('keyup', function() {
+        limitText(this, 50)
+    });
+
+    function limitText(field, maxChar){
+        var ref = $(field),
+            val = ref.val();
+        if ( val.length >= maxChar ){
+            ref.val(function() {
+                console.log(val.substr(0, maxChar))
+                return val.substr(0, maxChar);       
+            });
+        }
+    }
 });
 
 </script>
