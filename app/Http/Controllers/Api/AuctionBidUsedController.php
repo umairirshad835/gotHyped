@@ -466,8 +466,7 @@ class AuctionBidUsedController extends Controller
     {
         $validator = Validator::make ($request->all(), [
             'auction_id' => 'required',
-            'size_id' => 'required',
-            'user_address' => 'required',
+            'size_id' => 'required'
         ]);
 
         if($validator->fails())
@@ -489,55 +488,86 @@ class AuctionBidUsedController extends Controller
         $userAddress = $request->user_address;
         $userAddressId = $request->address_id;
 
-        if($userAddressId)
+        $shippingAddress = UserAddress::where('id',$userAddressId)->first();
+        // dd($shippingAddress);
+        if(!empty($shippingAddress))
         {
-            $shippingAddress = UserAddress::where('id',$userAddressId)->first();
-            if(!empty($shippingAddress)){
-                $userAddressId = $shippingAddress->id;
+            $userAddressId = $shippingAddress->id;
+
+            $data = [
+                'user_id' => $userId,
+                'size_id' => $sizeId,
+                'address_id' => $userAddressId,
+                'auction_id' => $auctionId,
+            ];
+            $shipping_data = UserShippingAddress::create($data);
+
+            if($shipping_data)
+            {
+                $updateCheckout = Product::where('id',$auctionId)->first();
+                $updateCheckout->update(['checkout_status' => 1]);
+                // dd($updateCheckout);
+                $response = [
+                    'status' => 1,
+                    'message' => 'Congratulations You will receive GotHyped Product at your shipping address',
+                    'method' => $request->route()->getActionMethod(),
+                    'data' => $shipping_data,
+                ];
+                    return response()->json($response);
             }
             else
             {
-                $shippingAddress = new UserAddress();
-                $shippingAddress->id = $userAddressId;
-                $shippingAddress->address = $request->user_address;
-                $shippingAddress->user_id = $userId;
-                $shippingAddress->save();
-    
-                $userAddressId = $shippingAddress->id;
-            }   
-        }
-
-        $data = [
-            'user_id' => $userId,
-            'size_id' => $sizeId,
-            'address_id' => (string)$userAddressId,
-            'auction_id' => $auctionId,
-        ];
-
-        $shipping_data = UserShippingAddress::create($data);
-
-        if($shipping_data)
-        {
-            $updateCheckout = Product::where('id',$auctionId)->first();
-            $updateCheckout->update(['checkout_status' => 1]);
-            $response = [
-                'status' => 1,
-                'message' => 'Congratulations You will receive GotHyped Product at your shipping address',
-                'method' => $request->route()->getActionMethod(),
-                'data' => $shipping_data,
-            ];
-            return response()->json($response);
+                $response = [
+                    'status' => 0,
+                    'message' => 'Sorry Invalid Data for old Shipping Product',
+                    'method' => $request->route()->getActionMethod(),
+                    'data' => (object) array(),
+                ];
+                return response()->json($response);
+            }
         }
         else
         {
-            $response = [
-                'status' => 0,
-                'message' => 'Sorry Invalid Data for Shipping Product',
-                'method' => $request->route()->getActionMethod(),
-                'data' => (object) array(),
-            ];
-            return response()->json($response);
+            $address = new UserAddress();
+            $address->address = $request->user_address;
+            $address->user_id = $userId;
+            $address->save();
+
+            if($address)
+            {
+                $data = [
+                    'user_id' => $userId,
+                    'size_id' => $sizeId,
+                    'address_id' => $address->id,
+                    'auction_id' => $auctionId,
+                ];
+
+                $shipping_data = UserShippingAddress::create($data);
+
+                if($shipping_data)
+                {
+                    $updateCheckout = Product::where('id',$auctionId)->first();
+                    $updateCheckout->update(['checkout_status' => 1]);
+                    // dd($updateCheckout);
+                    $response = [
+                        'status' => 2,
+                        'message' => 'Congratulations we Have save Your new Shipping Address and You will  receive GotHyped Product at your new shipping address',
+                        'method' => $request->route()->getActionMethod(),
+                        'data' => $shipping_data,
+                    ];
+                        return response()->json($response);
+                }
+                else
+                {
+                    $response = [
+                        'status' => 3,
+                        'message' => 'Sorry Invalid Data for new Shipping Product',
+                        'method' => $request->route()->getActionMethod(),
+                        'data' => (object) array(),
+                    ];
+                    return response()->json($response);
+                }
+            }
         }
-        
     }
 }

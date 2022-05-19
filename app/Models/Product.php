@@ -23,6 +23,7 @@ class Product extends Model
         'image3',
         'status',
         'auction_status',
+        'checkout_status',
     ];
 
     public function category(){
