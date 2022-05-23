@@ -27,7 +27,6 @@
                                         <tr>
                                             <th style="color:white;">#</th>
                                             <th style="color:white;">Name</th>
-                                            <th style="color:white;">Image</th>
                                             <th style="color:white;">Actual Price</th>
                                             <th style="color:white;">Market Price</th>
                                             <th style="color:white;">Winning Price</th>
@@ -42,13 +41,6 @@
                                         <tr>
                                             <td>{{++$key}}</td>
                                             <td>{{$complete->name}}</td>
-                                            <td>
-                                                @if(!empty($complete->image1))
-                                                    <img src="{{asset($complete->image1)}}" alt="" style="width:100px;height:80px">
-                                                @else
-                                                    <span>No Image Attached</span>
-                                                @endif
-                                            </td>
                                             <td>${{$complete->actual_price}}</td>
                                             <td>${{$complete->market_price}}</td>
                                             <td>$ {{$complete->winner->first()->auction_close_price}}</td>

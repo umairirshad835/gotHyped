@@ -244,10 +244,10 @@
                                         <tr>
                                             <th style="color:white;">#</th>
                                             <th style="color:white;">Name</th>
-                                            <th style="color:white;">Image</th>
                                             <th style="color:white;">Category</th>
                                             <th style="color:white;">Auction Price</th>
                                             <th style="color:white;">Auction Time</th>
+                                            <th style="color:white;">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -255,17 +255,12 @@
                                         <tr>
                                             <td>{{++$key}}</td>
                                             <td>{{$pending->name}}</td>
-                                            <td>
-                                                @if(!empty($pending->image1))
-                                                    <img src="{{asset($pending->image1)}}" alt="" style="width:100px;height:80px">
-                                                @else
-                                                    <span>No Image Attached</span>
-                                                @endif
-                                            </td>
                                             <td>{{$pending->category->first()->name}}</td>
                                             <td>$ {{$pending->auction_price}}</td>
                                             <td>{{ \Carbon\Carbon::createFromTimestamp(strtotime($pending->auction_time))->format('Y-m-d H:i:s A')}}</td>
-                                            
+                                            <td>
+                                                <a href="{{route('previewProduct', $pending->id)}}" target="_blank"><i class="fa fa-eye" aria-hidden="true"></i></a>
+                                            </td>
                                         </tr>
                                         @endforeach
                                     </tbody>
@@ -295,7 +290,6 @@
                                         <tr>
                                         <th style="color:white;">#</th>
                                             <th style="color:white;">Name</th>
-                                            <th style="color:white;">Image</th>
                                             <th style="color:white;">Actual Price</th>
                                             <th style="color:white;">Market Price</th>
                                             <th style="color:white;">Winning Price</th>
@@ -310,13 +304,6 @@
                                         <tr>
                                             <td>{{++$key}}</td>
                                             <td>{{$completed->name}}</td>
-                                            <td>
-                                                @if(!empty($completed->image1))
-                                                    <img src="{{asset($completed->image1)}}" alt="" style="width:100px;height:80px">
-                                                @else
-                                                    <span>No Image Attached</span>
-                                                @endif
-                                            </td>
                                             <td>${{$completed->actual_price}}</td>
                                             <td>${{$completed->market_price}}</td>
                                             <td>$ {{$completed->winner->first()->auction_close_price ?? ''}}</td>

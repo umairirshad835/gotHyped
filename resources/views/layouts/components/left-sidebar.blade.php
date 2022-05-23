@@ -30,7 +30,8 @@
                         class="angle fe fe-chevron-right"></i></a>
                     <ul class="slide-menu">
                         <li><a href="{{route('addSize')}}" class="slide-item"> Add Size</a></li>
-                        <li><a href="{{route('sizeList')}}" class="slide-item"> Size List</a></li>
+                        <li><a href="{{route('sizeList')}}" class="slide-item"> Active Size List</a></li>
+                        <li><a href="{{route('inActiveSize')}}" class="slide-item"> In Actice Size List</a></li>
                     </ul>
                 </li>
 

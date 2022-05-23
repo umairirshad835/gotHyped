@@ -4,12 +4,12 @@
   
     <style>
         .carousel-img {
-            height:200px;
+            height:400px;
             width: 300px;
         }
 
         .list-img {
-            height:130px;
+            height:100px;
         }
     </style>
  
@@ -95,10 +95,14 @@
                                         <div class=" mt-4 mb-5"><span class="fw-bold me-2">Auction Time :</span><span class="fw-bold text-success">{{ \Carbon\Carbon::createFromTimestamp(strtotime($product->auction_time))->format('Y-m-d H:i:s A')}}</span></div>
 
                                         @if($product->status == 1 )
-                                        <div class=" mt-4 mb-5"><span class="fw-bold me-2">Status :</span><span class="fw-bold text-success">Active</span></div>
-                                        @else
-                                        <div class=" mt-4 mb-5"><span class="fw-bold me-2">Status :</span><span class="fw-bold text-success">In-Active</span></div>
-                                        @endif
+                                    <div class=" mt-4 mb-5"><span class="fw-bold me-2">Product Status :</span><span class="fw-bold text-success">Approved</span></div>
+                                    @else
+                                    <div class=" mt-4 mb-5"><span class="fw-bold me-2">Status :</span><span class="fw-bold text-success">Unapproved</span></div>
+                                    @endif
+
+                                    @if($product->auction_status == 0 )
+                                    <div class=" mt-4 mb-5"><span class="fw-bold me-2">Auction Status :</span><span class="fw-bold text-success">Pending</span></div>
+                                    @endif
                                     </div>
                                 </div>
                             </div>

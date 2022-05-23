@@ -340,6 +340,9 @@ class ProductController extends Controller
     public function previewActiveProduct($id)
     {
         $product = Product::with('category')->find($id);
+        $sizes_id = AssignProductSize::where('product_id',$product->id)->where('status',1)->pluck('size_id');
+        $sizenames = ProductSize::whereIn('id',$sizes_id)->get();
+
         $auctin_start = AuctionStart::where('auction_id',$product->id)->first();
         
         // Active auctions preview
@@ -347,12 +350,14 @@ class ProductController extends Controller
 
         //  dd($activepreview);
         
-        return view('Admin.product.view-active-product',compact('product','activepreview','auctin_start'));
+        return view('Admin.product.view-active-product',compact('product','activepreview','auctin_start','sizenames'));
     }
 
     public function previewCompletedProduct($id)
     {
         $product = Product::with('category')->find($id);
+        $sizes_id = AssignProductSize::where('product_id',$product->id)->where('status',1)->pluck('size_id');
+        $sizenames = ProductSize::whereIn('id',$sizes_id)->get();
 
         // complete auctions preview
 
@@ -362,7 +367,7 @@ class ProductController extends Controller
 
         //   dd($winner);
         
-        return view('Admin.product.view-complete-product',compact('product','completeview','winner'));
+        return view('Admin.product.view-complete-product',compact('product','completeview','winner','sizenames'));
     }
 
 

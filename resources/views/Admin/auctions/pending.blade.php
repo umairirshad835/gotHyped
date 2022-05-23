@@ -30,7 +30,6 @@
                                         <tr>
                                             <th style="color:white;">#</th>
                                             <th style="color:white;">Name</th>
-                                            <th style="color:white;">Image</th>
                                             <th style="color:white;">Actual price</th>
                                             <th style="color:white;">Market price</th>
                                             <th style="color:white;">Auction price</th>
@@ -43,13 +42,6 @@
                                         <tr>
                                             <td>{{++$key}}</td>
                                             <td>{{$pending->name}}</td>
-                                            <td>
-                                                @if(!empty($pending->image1))
-                                                    <img src="{{asset($pending->image1)}}" alt="" style="width:100px;height:80px">
-                                                @else
-                                                    <span>No Image Attached</span>
-                                                @endif
-                                            </td>
                                             <td>${{$pending->actual_price}}</td>
                                             <td>${{$pending->market_price}}</td>
                                             <td>${{$pending->auction_price}}</td>

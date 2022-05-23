@@ -8,14 +8,21 @@ use App\Models\ProductSize;
 
 class ProductSizeController extends Controller
 {
-    public function sizeList(){
-
+    public function sizeList()
+    {
         $sizeList = ProductSize::where('status',1)->paginate(25);
         //  dd($sizeList);
             return view('Admin.size.index',compact('sizeList'));
     }
 
-    public function addSize(){
+    public function inActiveSizeList()
+    {
+        $InActivesize = ProductSize::where('status',0)->paginate(25);
+        return view('Admin.size.inactveSize',compact('InActivesize'));
+    }
+
+    public function addSize()
+    {
         $all_category = Category::all();
         
         return view('Admin.size.add-size',compact('all_category'));

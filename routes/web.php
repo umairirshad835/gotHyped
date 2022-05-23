@@ -89,6 +89,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     //Size Routes
     Route::get('/size-list',[ProductSizeController::class,'sizeList'])->name('sizeList');
+    Route::get('/In-Active-size-list',[ProductSizeController::class,'inActiveSizeList'])->name('inActiveSize');
     Route::get('/add-size',[ProductSizeController::class,'addSize'])->name('addSize');
     Route::post('/save-size',[ProductSizeController::class,'saveSize'])->name('saveSize');
     Route::get('edit-size/{id}',[ProductSizeController::class,'editSize'])->name('editSize');

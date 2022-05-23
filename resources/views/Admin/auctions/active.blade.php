@@ -27,7 +27,6 @@
                                         <tr>
                                             <th style="color:white;">#</th>
                                             <th style="color:white;">Name</th>
-                                            <th style="color:white;">Image</th>
                                             <th style="color:white;">Category</th>
                                             <th style="color:white;">Actual Price</th>
                                             <th style="color:white;">Market Price</th>
@@ -43,13 +42,6 @@
                                         <tr>
                                             <td>{{++$key}}</td>
                                             <td>{{$active->name}}</td>
-                                            <td>
-                                                @if(!empty($active->image1))
-                                                    <img src="{{asset($active->image1)}}" alt="" style="width:100px;height:80px">
-                                                @else
-                                                    <span>No Image Attached</span>
-                                                @endif
-                                            </td>
                                             <td>{{$active->category->name ?? ''}}</td>
                                             <td>${{$active->actual_price ?? ''}}</td>
                                             <td>${{$active->market_price ?? ''}}</td>
