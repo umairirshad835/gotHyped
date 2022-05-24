@@ -109,6 +109,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('preview-product/{id}',[ProductController::class,'previewProduct'])->name('previewProduct');
     Route::get('preview-active-product/{id}',[ProductController::class,'previewActiveProduct'])->name('previewActiveProduct');
     Route::get('preview-complete-product/{id}',[ProductController::class,'previewCompletedProduct'])->name('previewCompletedProduct');
+    Route::get('Iframe-products',[ProductController::class,'iFrameAuctions'])->name('iFrameAuctions');
+
 
     //Bid Routes
     Route::get('/bid-list',[BidController::class,'bidList'])->name('bidList');

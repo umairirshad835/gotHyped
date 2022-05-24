@@ -403,4 +403,19 @@ class ProductController extends Controller
         //     return $pdf;
     }
 
+    public function iFrameAuctions()
+    {
+        $data['auctionList'] = Product::where('status',1)->where('auction_status',0)->take(4)->get();
+        // dd($auctionList);
+
+        $data['secondList'] = Product::where('status',1)->where('auction_status',0)->skip(4)->take(100)->get();
+        // dd($data['secondList']);
+
+        if(count($data['secondList']) < 1){
+            
+            $data['secondList'] = $data['auctionList'];
+        }
+        return view('Admin.product.iframe',compact('data'));
+    }
+
 }
