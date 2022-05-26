@@ -109,7 +109,6 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('preview-product/{id}',[ProductController::class,'previewProduct'])->name('previewProduct');
     Route::get('preview-active-product/{id}',[ProductController::class,'previewActiveProduct'])->name('previewActiveProduct');
     Route::get('preview-complete-product/{id}',[ProductController::class,'previewCompletedProduct'])->name('previewCompletedProduct');
-    Route::get('Iframe-products',[ProductController::class,'iFrameAuctions'])->name('iFrameAuctions');
 
 
     //Bid Routes
@@ -158,6 +157,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('recharge-wallet',[UserController::class,'wallet']);
     Route::post('recharge-wallet',[UserController::class,'wallet'])->name('recharge-wallet');
 
+    Route::get('Iframe-products',[ProductController::class,'iFrameAuctions'])->name('iFrameAuctions');
+    
     // Route::get('pdf',[ProductController::class,'pdf']);
     // Route::get('/auction-index',[ManageAuctionController::class,'index'])->name('auctionIndex');
     // Route::post('/manage-auction',[ManageAuctionController::class,'manageAuction'])->name('manageAuction');
