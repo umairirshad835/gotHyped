@@ -26,8 +26,8 @@ class UserProfileController extends Controller
         {
             $user = User::where('id',$userId)->first();
             $bids = UserBid::where('id',$userId)->select('total_bids')->first();
-            $userAuctionWins = Winner::with('product.sizes')->where('user_id',$userId)->get();
-            $userLikeproducts = FavoriteItem::with('product.sizes')->where('user_id',$userId)->get();
+            $userAuctionWins = Winner::with('product.sizes.sizeName')->where('user_id',$userId)->get();
+            $userLikeproducts = FavoriteItem::with('product.sizes.sizeName')->where('user_id',$userId)->get();
             $auction_played = AuctionBidUsed::where('user_id',$userId)->count();
             $auction_won = Winner::where('user_id',$userId)->count();
 

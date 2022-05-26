@@ -79,6 +79,11 @@
             color: black;
             padding-left: 40px;
         }
+        @media only screen and (max-device-width: 480px) {
+            .col-item {
+                margin-top : 6px;
+            }
+        }
         
     </style>
 </head>
