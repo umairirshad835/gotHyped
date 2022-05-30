@@ -60,82 +60,81 @@ class UserProfileController extends Controller
     }
 
     
- public function guestProfileView(Request $request){
-
-    $user_request = $request->user_request_id;
-
-    $userSetting = UserSetting::where('user_id',$user_request)->where('user_profile_visibility',1)->first();
-    // dd($userSetting->id);
-
-    if($userSetting)
+    public function guestProfileView(Request $request)
     {
-        $checkProfileSetting = UserProfileSetting::where('user_setting_id',$userSetting->id)->first();
-        
-        $auctionPlayed = 0;
-        $auctionWon = 0;
-        $wins = 0;
-        $likes = 0;
+        $user_request = $request->user_request_id;
 
-        if($checkProfileSetting->auction_played == 1)
+        $userSetting = UserSetting::where('user_id',$user_request)->where('user_profile_visibility',1)->first();
+        // dd($userSetting->id);
+        if($userSetting)
         {
-            $auctionPlayed = AuctionBidUsed::where('user_id',$userSetting->user_id)->count();
-        }
-        else
-        {
+            $checkProfileSetting = UserProfileSetting::where('user_setting_id',$userSetting->id)->first();
+            
             $auctionPlayed = 0;
-        }
-
-        if($checkProfileSetting->auction_won == 1)
-        {
-            $auctionWon = Winner::where('user_id',$userSetting->user_id)->count();
-        }
-        else
-        {
             $auctionWon = 0;
-        }
+            $wins = 0;
+            $likes = 0;
 
-        if($checkProfileSetting->items_won == 1)
-        {
-            $wins = Winner::with('product.sizes')->where('user_id',$userSetting->user_id)->get();
+            if($checkProfileSetting->auction_played == 1)
+            {
+                $auctionPlayed = AuctionBidUsed::where('user_id',$userSetting->user_id)->count();
+            }
+            else
+            {
+                $auctionPlayed = 0;
+            }
+
+            if($checkProfileSetting->auction_won == 1)
+            {
+                $auctionWon = Winner::where('user_id',$userSetting->user_id)->count();
+            }
+            else
+            {
+                $auctionWon = 0;
+            }
+
+            if($checkProfileSetting->items_won == 1)
+            {
+                $wins = Winner::with('product.sizes')->where('user_id',$userSetting->user_id)->get();
+            }
+            else
+            {
+                $wins = [];
+            }
+            
+            if($checkProfileSetting->items_liked == 1)
+            {
+                $likes = FavoriteItem::with('product.sizes')->where('user_id',$userSetting->user_id)->get();
+            }
+            else
+            {
+                $likes = [];
+            }
+
+            $data = [
+                'auction_played' => $auctionPlayed,
+                'auction_won' => $auctionWon,
+                'Wins' => $wins,
+                'likes' => $likes,
+            ];
+
+            // dd($data);
+
+            $response = [
+                'status' => 1,
+                'message' => 'Guest Profile Data Feteched Successfully',
+                'data' => $data,
+            ];
+            return response()->json($response);
         }
         else
         {
-            $wins = [];
+            $response = [
+                'status' => 0,
+                'message' => 'User Does Not Allow to view his\her Profile',
+                'data' => (object) array(),
+            ];
+            return response()->json($response);
         }
-        
-        if($checkProfileSetting->items_liked == 1)
-        {
-            $likes = FavoriteItem::with('product.sizes')->where('user_id',$userSetting->user_id)->get();
-        }
-        else
-        {
-            $likes = [];
-        }
-
-        $data = [
-            'auction_played' => $auctionPlayed,
-            'auction_won' => $auctionWon,
-            'Wins' => $wins,
-            'likes' => $likes,
-        ];
-
-        // dd($data);
-
-        $response = [
-            'status' => 1,
-            'message' => 'Guest Profile Data Feteched Successfully',
-            'data' => $data,
-        ];
-        return response()->json($response);
     }
-    else
-    {
-        $response = [
-            'status' => 0,
-            'message' => 'User Does Not Allow to view his\her Profile',
-            'data' => (object) array(),
-        ];
-        return response()->json($response);
-    }
-}
 }

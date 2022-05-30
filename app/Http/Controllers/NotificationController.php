@@ -11,17 +11,19 @@ use App\Helpers\fireBaseNotification;
 
 class NotificationController extends Controller
 {
-    public function notificationList(){
+    public function notificationList()
+    {
         $notificationList = Notification::paginate(25);
             return view('Admin.notification.index',compact('notificationList'));
     }
 
-    public function addNotification(){
+    public function addNotification()
+    {
         return view('Admin.notification.add-notification');
     }
 
-    public function saveNotification(Request $request){
-
+    public function saveNotification(Request $request)
+    {
         $request->validate([
             'title' => 'required|max:50',
             'body' => 'required|max:1000',
@@ -35,7 +37,16 @@ class NotificationController extends Controller
 
         $notification = Notification::create($notification);
 
-        $checkTokens = User::where('roles', 'customer')->whereNotNull('device_token')->get();
+        // $checkTokens = User::where('roles', 'customer')->whereNotNull('device_token')->get();
+
+        $checkTokens = User::select('id','name','username','email','roles','device_token')
+        ->whereHas(
+            'userSetting',function($query){
+                $query->select('id','user_id','push_notification')->where('push_notification',1);
+            })
+            ->where('roles', 'customer')->whereNotNull('device_token')->get();
+        // dd($checkTokens);
+
         $body = $request->body;
         $title = $request->title;
         if(empty($title))
@@ -63,13 +74,14 @@ class NotificationController extends Controller
         }
     }
 
-    public function editNotification($id){
-
+    public function editNotification($id)
+    {
         $notifincation = Notification::find($id);
             return view('Admin.notification.update-notification',compact('notifincation'));
     }
 
-    public function updateNotification(Request $request){
+    public function updateNotification(Request $request)
+    {
         $request->validate([
             'title' => 'required|max:50',
             'body' => 'required|max:1000',
@@ -88,7 +100,8 @@ class NotificationController extends Controller
             return redirect()->route('notificationList')->with('success','Notification Updated Successfully');
     }
 
-    public function changeNotificationStatus(Request $request, $id){
+    public function changeNotificationStatus(Request $request, $id)
+    {
         $updateStatus = Notification::find($id);
         $status = [
             'status' => $request->status,

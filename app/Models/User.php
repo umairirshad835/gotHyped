@@ -75,4 +75,8 @@ class User extends Authenticatable
     public function winner(){
         return $this->belongsTo(Winner::class,'user_id','id');
     }
+
+    public function NotifyAlert(){
+        return $this->hasMany(NotifyAlert::class,'user_id','id');
+    }
 }

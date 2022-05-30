@@ -56,25 +56,18 @@ class UserController extends Controller
     public function userdetail($id)
     {
         $user = User::find($id);
-
         $user_bids = UserBid::where('user_id',$id)->first();
-
         $purchased_bids = BidPurchased::where('user_id',$id)->get();
-
         $bid_history = AuctionBidUsed::with('product')->where('user_id',$id)->get();
-
         $winner_auctions = Winner::with(['winproduct','shippingAddressNew'])->where('user_id',$id)->get();
-        
         $auction_lost = Loser::with('ProductLost')->where('user_id',$id)->get();
-
-        return view('Admin.user.user_detail',compact('user','user_bids','purchased_bids','bid_history','auction_lost','winner_auctions'));
+            return view('Admin.user.user_detail',compact('user','user_bids','purchased_bids','bid_history','auction_lost','winner_auctions'));
     }
 
     public function winnerList()
     {
         $winnerList = Winner::with(['user','product','WinnerBid'])->paginate(25);
         //  dd($winnerList);
-
             return view('Admin.user.winnerList',compact('winnerList'));
     }
 
@@ -180,9 +173,7 @@ class UserController extends Controller
     public function rechargeUserWallet($balance,$userId)
     {
         $add_balance = $balance;
-
         $find_customer_wallet = UserWallet::where('user_id',$userId)->first();
-
         $wallet_amount = 0;
 
         if(!empty($find_customer_wallet->wallet_amount))
@@ -199,7 +190,6 @@ class UserController extends Controller
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ];
-
-        return $check_wallet = UserWallet::updateOrInsert(['user_id' => $userId], $update_customer_wallet);
+            return $check_wallet = UserWallet::updateOrInsert(['user_id' => $userId], $update_customer_wallet);
     }
 }

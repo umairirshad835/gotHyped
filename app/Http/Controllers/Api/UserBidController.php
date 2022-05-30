@@ -10,8 +10,8 @@ use App\Models\UserBid;
 
 class UserBidController extends Controller
 {
-    public function userBid(){
-
+    public function userBid()
+    {
         $user = Auth::user();
         $userId = $user->id;
 

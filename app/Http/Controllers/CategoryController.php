@@ -9,20 +9,20 @@ use App\Models\CategorySize;
 
 class CategoryController extends Controller
 {
-    public function categoryList(){
-
+    public function categoryList()
+    {
         $categoryList = Category::paginate(25);
         return view('Admin.category.index',compact('categoryList'));
     }
 
-    public function addCategory(){
-
+    public function addCategory()
+    {
         $sizes = ProductSize::all();
             return view('Admin.category.add-category',compact('sizes'));
     }
 
-    public function saveCategory(Request $request){
-        
+    public function saveCategory(Request $request)
+    {
         $request->validate([
             'name' => 'required|max:50',
             'status' => 'required',
@@ -53,8 +53,8 @@ class CategoryController extends Controller
         }
     }
 
-    public function editCategory($id){
-
+    public function editCategory($id)
+    {
         $category = Category::find($id);
             return view('Admin.category.update-category',compact('category'));
     }
@@ -107,14 +107,15 @@ class CategoryController extends Controller
        
     }
 
-    public function deleteCategory($id){
+    public function deleteCategory($id)
+    {
         $category = Category::where('id',$id)->delete();
 
         return redirect()->route('categoryList')->with('success','Category deleted');
     }
 
-    public function changeCategoryStatus(Request $request, $id){
-
+    public function changeCategoryStatus(Request $request, $id)
+    {
         $updateStatus = Category::find($id);
         $status = [
             'status' => $request->status,

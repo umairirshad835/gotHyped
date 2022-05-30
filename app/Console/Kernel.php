@@ -28,6 +28,7 @@ class Kernel extends ConsoleKernel
           $schedule->command('auction:schedule')->everyThirtyMinutes();
           $schedule->command('subscription:cron')->monthly();
           $schedule->command('auctioncompleted:cron')->everyMinute();
+          $schedule->command('productalert:cron')->everyMinute();
 
     }
 

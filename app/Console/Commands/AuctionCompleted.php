@@ -59,7 +59,7 @@ class AuctionCompleted extends Command
 
         foreach($get_completed_auctions as $completed)
         {
-            $product = Product::with('sizes')->where('id',$completed->product_id)->first();
+            $product = Product::with('sizes')->where('id',$completed->product_id)->where('checkout_status',1)->first();
             $sizes_id = AssignProductSize::where('product_id',$product->id)->where('status',1)->pluck('size_id');
             $sizenames = ProductSize::whereIn('id',$sizes_id)->get();
             $customer = User::where('id',$completed->user_id)->first();

@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Faker\Factory;
 use DB;
 use App\Helpers\BotUser;
+use Illuminate\Support\Facades\Log;
 
 use App\Models\AuctionUserEntered;
 use App\Models\AuctionBidUsed;
@@ -149,6 +150,7 @@ class AuctionBidUsedController extends Controller
             $data = $this->manageAuction($auctionId,$userId);
             
             $current_price = $data['current_price'];
+            // dd($current_price);
             $winner = User::where('id',$data['last_user_id'])->first();
             if($data == 0)
             {
@@ -164,7 +166,7 @@ class AuctionBidUsedController extends Controller
                     'status' => 1,
                     'message' => 'Bid Successfully',
                     'method' => $request->route()->getActionMethod(),
-                    'current_price' => $current_price
+                    'current_price' => number_format((float)$current_price, 2, '.', ''),
                 ];
                     return response()->json($responses);
         // }
@@ -306,7 +308,7 @@ class AuctionBidUsedController extends Controller
                 'message' => 'This Auction have no users yet',
                 'method' => $request->route()->getActionMethod(),
                 'winner' => (object) array(),
-                'other_user' => (object) array(),
+                'other_user' => array(),
             ];
                 return response()->json($response);
         }

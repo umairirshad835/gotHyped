@@ -270,7 +270,6 @@ class ProductController extends Controller
 
     public function changeProductStatus(Request $request, $id)
     {
-
         $updateStatus = Product::find($id);
         $status = [
             'status' => $request->status,
@@ -370,7 +369,6 @@ class ProductController extends Controller
         return view('Admin.product.view-complete-product',compact('product','completeview','winner','sizenames'));
     }
 
-
     public function pdf()
     {
         $get_completed_auctions = Winner::where('email_status',0)->get();
@@ -398,24 +396,16 @@ class ProductController extends Controller
         }
             return view('emails/auction-completed', compact('product','completed','sizenames','customer','auction','losers','winner_bids','shipping_Address','real_bids','dummy_bids'));
 
-        // $pdf = PDF::loadView('emails/auction-completed', compact('product'));
+        // $pdf = PDF::loadView('emails/auction-completed', compact('product','completed','sizenames','customer','auction','losers','winner_bids','shipping_Address','real_bids','dummy_bids'));
         //         // dd($pdf);
         //     return $pdf;
     }
 
     public function iFrameAuctions()
     {
-        $data['auctionList'] = Product::where('status',1)->where('auction_status',0)->take(4)->get();
-        //  dd($data['auctionList']);
-
-        $data['secondList'] = Product::where('status',1)->where('auction_status',0)->skip(4)->take(100)->get();
-        // dd($data['secondList']);
-
-        if(count($data['secondList']) < 1){
-            
-            $data['secondList'] = $data['auctionList'];
-        }
-        return view('Admin.product.iframe',compact('data'));
+        $pending_auction = Product::orderBy('auction_time','DESC')->where('status',1)->where('auction_status',0)->skip(1)->take(2)->get();
+        // dd($pending_auction);
+            return view('Admin.product.iframe',compact('pending_auction'));
     }
 
 }

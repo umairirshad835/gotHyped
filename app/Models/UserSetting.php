@@ -23,4 +23,8 @@ class UserSetting extends Model
     public function userProfileSetting(){
         return $this->belongsTo(UserProfileSetting::class,'user_setting_id','id');
     }
+
+    public function NotifyAlert(){
+        return $this->belongsTo(NotifyAlert::class,'user_id','user_id');
+    }
 }

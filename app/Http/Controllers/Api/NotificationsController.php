@@ -9,9 +9,10 @@ use App\Models\Notification;
 
 class NotificationsController extends Controller
 {
-    public function notification(){
-
+    public function notification()
+    {
         $notifications = Notification::all();
+        
         if(!empty($notifications)){
             $response = [
                 'status' => 1,

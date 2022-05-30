@@ -18,4 +18,16 @@ class NotifyAlert extends Model
     public function product(){
         return $this->hasMany(Product::class,'id','product_id');
     }
+
+    public function userSetting(){
+        return $this->hasMany(UserSetting::class,'user_id','user_id');
+    }
+
+    public function user(){
+        return $this->hasMany(User::class,'id','user_id');
+    }
+
+    public function notifyProduct(){
+        return $this->belongsTo(Product::class,'id','product_id');
+    }
 }

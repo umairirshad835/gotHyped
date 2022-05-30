@@ -174,7 +174,7 @@
                 <div style="float: left; width:60%" >
                     <div><span><b>Product Name :</b> {{$product->name ?? ''}}</span> </div>
                     <div><span><b>Product Description :</b> {{ \Illuminate\Support\Str::words($product->description ?? '',10, '>>>') }}</span> </div>
-                    <div><span><b>Product Size's :</b> 
+                    <div><span><b>Product Size :</b> 
                         @foreach($sizenames as $size)
                             {{ \Illuminate\Support\Str::words($size->name ?? '', 10, '>>>') }}@if ( ! $loop->last),@endif 
                         @endforeach

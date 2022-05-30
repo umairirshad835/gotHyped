@@ -23,8 +23,8 @@ use App\Models\UserWallet;
 
 class AuthController extends Controller
 {
-    public function register(Request $request){
-
+    public function register(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'username' => 'required|unique:users|max:50',
             'name' => 'required|max:50',
@@ -207,7 +207,7 @@ class AuthController extends Controller
             return response()->json($response);
         }
 
-        $customer = User::where(['email'=> $request->email])->first();
+        $customer = User::where(['email'=> $request->email])->where('roles','customer')->first();
 
         if($customer)
         {
@@ -311,13 +311,13 @@ class AuthController extends Controller
 
     public function verifyOTP(Request $request)
     {
-        $email = $request->email;
-        $find_user = User::where('email',$email)->first();
-
         $validator = Validator::make($request->all(),[
             'code' => 'required',
             'email' => 'required',
         ]);
+
+        $email = $request->email;
+        $find_user = User::where('email',$email)->first();
 
         if($validator->fails())
         {
@@ -354,14 +354,14 @@ class AuthController extends Controller
         }
     }
 
-    public function resetPassword(Request $request){
-
-        $email = $request->email;
-
+    public function resetPassword(Request $request)
+    {
         $validator = Validator::make ($request->all(), [
             'password' => 'required|min:8',
             'confirm_password' => 'required|same:password',
         ]);
+
+        $email = $request->email;
 
         if($validator->fails())
         {
@@ -401,14 +401,12 @@ class AuthController extends Controller
         }
     }
 
-    public function updateProfile(Request $request){
-
+    public function updateProfile(Request $request)
+    {
         $validator = Validator::make ($request->all(), [
-            // 'username' => 'required|unique:users|max:50',
-            // 'name' => 'required|max:50',
-            // 'email' => 'required|unique:users',
             'phone' => 'required|max:13',
             'address' => 'required',
+            'profile' => 'mimes:jpg,jpeg,png',
             'password' => 'required|min:8',
             'confirm_password' => 'same:password'
         ]);
@@ -427,15 +425,38 @@ class AuthController extends Controller
         $user = Auth::user();
 	    $userId = $user->id;
         $find_user = User::find($userId);
-        // dd($find_user);
+
+        // request Image
+        $profile = $request->file('profile');
+        if(!empty($profile)){
+            $profileImage = $profile->getClientOriginalName();
+        }
+
+        // make directory if not exists to store Customer Image 
+        $upload_dir = 'uploads/UserProfile/';
+        if(!is_dir($upload_dir)) 
+            mkdir($upload_dir, 0755, true);
+        
+        if(!empty($profile)){
+            $profile_path = str_replace(' ','_',$upload_dir.$profileImage);
+        }
+
+        if(!empty($profile)){
+            $profile->move($upload_dir,str_replace(' ','_',$profileImage));
+        }
+       
+        // delete Old Profile
+        // $unlink_old_profile = $user->profile;
+        // unlink($unlink_old_profile);
+
         $data = [
-            // 'username' => $request->username,
-            // 'name' => $request->name,
-            // 'email' => $request->email,
             'phone' => $request->phone,
             'address' => $request->address,
+            'profile' => isset($profile_path) ? $profile_path : '',
             'password' => bcrypt($request->password),
         ];
+
+        // dd($data);
 
         if(!empty($data))
         {
@@ -463,14 +484,16 @@ class AuthController extends Controller
         }
     }
 
-    public function googleApi(Request $request) {
+    public function googleApi(Request $request) 
+    {
         $user_email = $request->email;
         $user_first_name = $request->first_name;
+        $username = $request->username;
 
         $data = [
             'first_name' => $user_first_name,
             'email' => $user_email,
-            'username' => $user_first_name,
+            'username' => $username,
             'roles' => 'customer',
             'device_token' => $request->device_token,
             'device_id' => $request->device_id,
@@ -542,6 +565,7 @@ class AuthController extends Controller
             $customer = [
                 'first_name' => $newCustomer->first_name,
                 'email' => $newCustomer->email,
+                'username' => $newCustomer->username,
             ];
 
             $tokenResult = $newCustomer->createToken('customer');

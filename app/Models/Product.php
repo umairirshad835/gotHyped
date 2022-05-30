@@ -63,6 +63,6 @@ class Product extends Model
     } 
 
     public function alert(){
-        return $this->hasOne(NotifyAlert::class,'product_id','id');
+        return $this->hasMany(NotifyAlert::class,'product_id','id');
     }
 }

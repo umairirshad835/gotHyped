@@ -110,7 +110,7 @@
                     <div class="col-xl-12 col-md-12">
                         <div class="form-group">
                             <label class="form-label">Description</label>
-                            <input id="descripton" class="form-control @error('descripton') is-invalid @enderror" value="{{ $product->description }}" name="descripton" type="text" placeholder="Enter description">
+                            <textarea id="descripton" class="form-control @error('descripton') is-invalid @enderror" name="descripton" type="text" placeholder="Enter description">{{ $product->description }}</textarea>
                                 @error('descripton')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>

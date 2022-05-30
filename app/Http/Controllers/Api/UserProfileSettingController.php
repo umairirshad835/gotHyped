@@ -39,6 +39,5 @@ class UserProfileSettingController extends Controller
             ];
             return response()->json($respoonse);
         }
-
     }
 }

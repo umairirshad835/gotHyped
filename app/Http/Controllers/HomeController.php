@@ -21,7 +21,7 @@ class HomeController extends Controller
             'password'  => 'required'
            ]);
            
-           $user = User::where(['email'=>$request->email])->first();
+        $user = User::where(['email'=>$request->email])->where('roles','admin')->first();
            
         if(empty($user->email))
         {
@@ -49,7 +49,8 @@ class HomeController extends Controller
         }   
     }
 
-    public function logout() {
+    public function logout() 
+    {
         Auth::logout();
         return redirect()->route('login');
     }

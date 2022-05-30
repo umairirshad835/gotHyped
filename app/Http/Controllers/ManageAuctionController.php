@@ -341,8 +341,8 @@ class ManageAuctionController extends Controller
         }
     }
 
-    public function auctionBidsCalculation($auctionId){
-
+    public function auctionBidsCalculation($auctionId)
+    {
         $auctionBidsUsed = AuctionStart::where('auction_id',$auctionId)->first();
     }
 }

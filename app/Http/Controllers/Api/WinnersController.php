@@ -11,10 +11,10 @@ use App\Models\Winner;
 
 class WinnersController extends Controller
 {
-    public function winners(){
-
+    public function winners()
+    {
         $winnersList = Winner::with(['winuser','winproduct','WinnerBidwon'])->get();
-
+        
         if(!$winnersList->isEmpty())
         {
             $response = [
