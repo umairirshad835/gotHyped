@@ -403,7 +403,7 @@ class ProductController extends Controller
 
     public function iFrameAuctions()
     {
-        $pending_auction = Product::orderBy('auction_time','DESC')->where('status',1)->where('auction_status',0)->skip(1)->take(2)->get();
+        $pending_auction = Product::orderBy('auction_time')->where('status',1)->where('auction_status',0)->skip(1)->take(2)->get();
         // dd($pending_auction);
             return view('Admin.product.iframe',compact('pending_auction'));
     }

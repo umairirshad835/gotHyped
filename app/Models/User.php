@@ -79,4 +79,14 @@ class User extends Authenticatable
     public function NotifyAlert(){
         return $this->hasMany(NotifyAlert::class,'user_id','id');
     }
+
+        // to view current winning user profile
+    public function profileVisibility(){
+        return $this->hasOne(UserSetting::class,'user_id','id');
+    }
+
+        //  to view all other losing users profile
+    public function allUserProfile(){
+        return $this->hasMany(UserSetting::class,'user_id','id');
+    }
 }

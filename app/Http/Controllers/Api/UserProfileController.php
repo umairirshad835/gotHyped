@@ -131,7 +131,7 @@ class UserProfileController extends Controller
         {
             $response = [
                 'status' => 0,
-                'message' => 'User Does Not Allow to view his\her Profile',
+                'message' => 'User Does Not Allow to view Profile',
                 'data' => (object) array(),
             ];
             return response()->json($response);

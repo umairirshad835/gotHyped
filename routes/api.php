@@ -46,7 +46,8 @@ Route::post('/auth/reset-password', [AuthController::class, 'resetPassword']);
 // Social Login
 Route::post('/auth/social-login', [AuthController::class, 'googleApi']);
 
-Route::group(['middleware' => 'auth:api'], function () {
+
+Route::group(['middleware' => ['auth:api']], function () {
    
     //Auction
     Route::post('/auction-user', [AuctionUserEnteredController::class, 'auctionUsers']);

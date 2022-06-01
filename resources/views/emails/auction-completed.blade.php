@@ -233,8 +233,10 @@
                     <td class="desc">
                         @if($completed->market_value_status == 1)
                             <span>Market Price</span> 
+                        @elseif($completed->get_product_status == 1)
+                            <span>Delivery</span>
                         @else
-                            <span>Delivery</span>   
+                            <span>N/A</span>      
                         @endif
                     </td>
                 </tr>

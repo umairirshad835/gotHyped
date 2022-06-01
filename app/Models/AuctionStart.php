@@ -13,6 +13,7 @@ class AuctionStart extends Model
         'auction_id',
         'current_bid_used',
         'currrent_price',
+        'last_user_id',
     ];
 
     public function product(){

@@ -255,11 +255,11 @@ class AuctionBidUsedController extends Controller
 
         $auctionId = $request->auction_id;
         
-        $winner_user = AuctionStart::with('users')->where('auction_id',$auctionId)->first();
+        $winner_user = AuctionStart::with(['users.profileVisibility'])->where('auction_id',$auctionId)->first();
 
         if($winner_user)
         {
-            $all_bidding_users = AuctionBidUsed::select('id','user_id','auction_id')
+            $all_bidding_users = AuctionBidUsed::with('users.allUserProfile')->select('id','user_id','auction_id')
             ->whereHas('users', function($query) use($winner_user){
                 $query->select('id','name')->where('user_id','!=', $winner_user['last_user_id']);
             })
@@ -329,7 +329,7 @@ class AuctionBidUsedController extends Controller
             return response()->json($response);
         }
         
-        $find_auction = Product::where('id', $auctionId)->where('auction_status', 1)->first();
+        $find_auction = Product::where('id', $auctionId)->where('auction_status', 2)->first();
 
         if(!empty($find_auction))
         {
@@ -399,6 +399,7 @@ class AuctionBidUsedController extends Controller
             ];
 
             $update_wallet = UserWallet::where('user_id',$userId)->update($data);
+            $update_winner_checkout = Winner::where('user_id',$userId)->update(['market_value_status'=>1]);
             $updateCheckout = Product::where('id',$auctionId)->first();
             $updateCheckout->update(['checkout_status' => 1]);
 
@@ -506,6 +507,7 @@ class AuctionBidUsedController extends Controller
 
             if($shipping_data)
             {
+                $update_winner_checkout = Winner::where('user_id',$userId)->update(['get_product_status'=>1]);
                 $updateCheckout = Product::where('id',$auctionId)->first();
                 $updateCheckout->update(['checkout_status' => 1]);
                 // dd($updateCheckout);
@@ -548,6 +550,7 @@ class AuctionBidUsedController extends Controller
 
                 if($shipping_data)
                 {
+                    $update_winner_checkout = Winner::where('user_id',$userId)->update(['get_product_status'=>1]);
                     $updateCheckout = Product::where('id',$auctionId)->first();
                     $updateCheckout->update(['checkout_status' => 1]);
                     // dd($updateCheckout);
